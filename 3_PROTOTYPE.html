@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J-AP 2026 — Visual Prototype | J-Architect-Pilot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2235;
+            --border-color: #1e3a5f;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+            --accent-purple: #8b5cf6;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+        }
+        
+        * { font-family: 'Inter', system-ui, sans-serif; }
+        code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
+        
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
+
+        .glass-panel {
+            background: rgba(26, 34, 53, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(30, 58, 95, 0.5);
+        }
+
+        .glow-blue { box-shadow: 0 0 20px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255,255,255,0.05); }
+        .glow-green { box-shadow: 0 0 16px rgba(16, 185, 129, 0.2); }
+        .glow-red { box-shadow: 0 0 16px rgba(239, 68, 68, 0.2); }
+        .glow-yellow { box-shadow: 0 0 16px rgba(245, 158, 11, 0.2); }
+
+        .state-node {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .state-node.active {
+            transform: scale(1.08);
+            z-index: 10;
+        }
+        .state-node.completed {
+            opacity: 0.5;
+        }
+
+        .state-arrow {
+            transition: all 0.3s ease;
+        }
+        .state-arrow.active path {
+            stroke: var(--accent-cyan);
+            filter: drop-shadow(0 0 4px rgba(6, 182, 212, 0.6));
+            stroke-dashoffset: 0;
+            animation: flowDash 1s linear infinite;
+        }
+        @keyframes flowDash {
+            to { stroke-dashoffset: -20; }
+        }
+
+        .log-entry {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-12px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .pulse-dot {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .typing-indicator span {
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .file-tree-item { transition: background 0.15s ease; }
+        .file-tree-item:hover { background: rgba(59, 130, 246, 0.08); }
+        .file-tree-item.selected { background: rgba(59, 130, 246, 0.15); border-left: 2px solid var(--accent-blue); }
+
+        .code-line { transition: background 0.15s ease; }
+        .code-line.error { background: rgba(239, 68, 68, 0.12); }
+        .code-line.fixed { background: rgba(16, 185, 129, 0.08); }
+
+        .mermaid-container { background: rgba(17, 24, 39, 0.9); border-radius: 12px; padding: 16px; }
+
+        .toggle-switch {
+            position: relative; width: 48px; height: 26px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background: #374151; border-radius: 26px; transition: 0.3s;
+        }
+        .toggle-slider:before {
+            content: ""; position: absolute; height: 20px; width: 20px; left: 3px; bottom: 3px;
+            background: white; border-radius: 50%; transition: 0.3s;
+        }
+        input:checked + .toggle-slider { background: var(--accent-red); }
+        input:checked + .toggle-slider:before { transform: translateX(22px); }
+
+        .progress-ring { transform: rotate(-90deg); }
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="min-h-screen overflow-hidden">
+
+<!-- ═══════════════════ TOP NAVBAR ═══════════════════ -->
+<nav class="h-14 glass-panel flex items-center justify-between px-6 border-b border-[#1e3a5f] relative z-50">
+    <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center font-bold text-sm text-white">J</div>
+        <span class="font-semibold text-lg tracking-tight">J-Architect-Pilot</span>
+        <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/20 ml-2">2026 Industrial</span>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 text-xs text-[--text-muted]">
+            <span class="w-2 h-2 rounded-full bg-green-500 pulse-dot"></span>
+            JDK 25 · Spring Boot 3.4 · LangChain4j 1.0.0
+        </div>
+        <div id="globalStatus" class="text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+            SYSTEM IDLE
+        </div>
+    </div>
+</nav>
+
+<!-- ═══════════════════ MAIN LAYOUT ═══════════════════ -->
+<div class="flex h-[calc(100vh-56px)]">
+
+    <!-- ═══ LEFT PANEL: Requirement Console ═══ -->
+    <aside class="w-80 glass-panel border-r border-[--border-color] flex flex-col overflow-hidden">
+        <!-- Header -->
+        <div class="p-4 border-b border-[--border-color]">
+            <h2 class="text-sm font-semibold text-[--text-secondary] uppercase tracking-wider">Requirement Console</h2>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 space-y-5">
+            
+            <!-- Tech Stack Selector -->
+            <div>
+                <label class="block text-xs font-medium text-[--text-muted] mb-2 uppercase tracking-wide">Tech Stack</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="tech-chip selected" data-tech="jdk25" onclick="toggleTech(this)">
+                        <span class="text-xs font-medium">JDK 25</span><br><span class="text-[10px] text-[--text-muted]">Structured Concurrency</span>
+                    </div>
+                    <div class="tech-chip selected" data-tech="springboot" onclick="toggleTech(this)">
+                        <span class="text-xs font-medium">Spring Boot 3.4</span><br><span class="text-[10px] text-[--text-muted]">Virtual Threads</span>
+                    </div>
+                    <div class="tech-chip selected" data-tech="langchain4j" onclick="toggleTech(this)">
+                        <span class="text-xs font-medium">LangChain4j</span><br><span class="text-[10px] text-[--text-muted]">1.0.0 Stable</span>
+                    </div>
+                    <div class="tech-chip selected" data-tech="mysql" onclick="toggleTech(this)">
+                        <span class="text-xs font-medium">MySQL 9.x</span><br><span class="text-[10px] text-[--text-muted]">+ Redis 7.4+</span>
+                    </div>
+                </div>
+                <style>
+                    .tech-chip {
+                        padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-color);
+                        background: var(--bg-secondary); cursor: pointer; transition: all 0.2s;
+                        line-height: 1.3;
+                    }
+                    .tech-chip.selected { border-color: var(--accent-blue); background: rgba(59,130,246,0.1); }
+                    .tech-chip:hover:not(.selected) { border-color: var(--accent-cyan); }
+                </style>
+            </div>
+
+            <!-- Requirement Input -->
+            <div>
+                <label class="block text-xs font-medium text-[--text-muted] mb-2 uppercase tracking-wide">User Requirement</label>
+                <textarea id="requirementInput" rows="6" placeholder="Describe the software you want to build...&#10;&#10;Example: Implement a User CRUD RESTful API with pagination, using MySQL storage"
+                    class="w-full bg-[--bg-secondary] border border-[--border-color] rounded-lg p-3 text-sm text-[--text-primary] placeholder-[--text-muted] resize-none focus:outline-none focus:border-[--accent-blue] focus:ring-1 focus:ring-[--accent-blue]/30 mono"></textarea>
+            </div>
+
+            <!-- Fault Simulation Toggle -->
+            <div class="rounded-xl border border-[--border-color] bg-[--bg-secondary] p-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                            <span class="text-xs font-semibold text-red-400">Fault Simulation</span>
+                        </div>
+                        <p class="text-[10px] text-[--text-muted] mt-1 ml-6">Simulate E02 compile error → Self-Healing loop</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="faultToggle" onchange="onFaultToggle(this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div id="faultDetail" class="hidden mt-2 pt-2 border-t border-[--border-color]">
+                    <select id="faultType" class="w-full bg-[--bg-primary] border border-[--border-color] rounded-md text-xs p-1.5 text-[--text-secondary] focus:outline-none">
+                        <option value="E02">E02 — Compile Error (typo in method name)</option>
+                        <option value="E06">E06 — Test Failure (NPE in service)</option>
+                        <option value="E05">E05 — Security Violation (path traversal)</option>
+                        <option value="E01">E01 — Format Error (malformed JSON)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Launch Button -->
+            <button id="launchBtn" onclick="startAgent()" 
+                class="w-full py-3 rounded-xl font-semibold text-sm bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 active:scale-[0.98] flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Launch Agent Pipeline
+            </button>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 gap-2 mt-auto">
+                <div class="rounded-lg bg-[--bg-secondary] border border-[--border-color] p-2.5 text-center">
+                    <div class="text-lg font-bold text-[--accent-cyan]" id="statDuration">--</div>
+                    <div class="text-[10px] text-[--text-muted]">Duration (s)</div>
+                </div>
+                <div class="rounded-lg bg-[--bg-secondary] border border-[--border-color] p-2.5 text-center">
+                    <div class="text-lg font-bold text-[--accent-green]" id="statRetries">0/3</div>
+                    <div class="text-[10px] text-[--text-muted]">Healing Rounds</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+
+    <!-- ═══ CENTER PANEL: Agent Brain View ═══ -->
+    <main class="flex-1 flex flex-col overflow-hidden min-w-0">
+        
+        <!-- State Machine Visualization -->
+        <div class="h-52 border-b border-[--border-color] p-4 overflow-x-auto">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xs font-semibold text-[--text-secondary] uppercase tracking-wider">Agent State Machine</h3>
+                <span id="currentStateLabel" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 mono">IDLE</span>
+            </div>
+            <svg id="stateMachineSvg" viewBox="0 0 900 140" class="w-full h-28" style="min-width:720px;">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#374151"/>
+                    </marker>
+                    <marker id="arrowhead-active" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#06b6d4"/>
+                    </marker>
+                    <linearGradient id="nodeGradIdle" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#374151"/><stop offset="100%" style="stop-color:#1f2937"/>
+                    </linearGradient>
+                    <linearGradient id="nodeGradActive" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#3b82f6"/><stop offset="100%" style="stop-color:#06b6d4"/>
+                    </linearGradient>
+                    <linearGradient id="nodeGradComplete" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#059669"/><stop offset="100%" style="stop-color:#047857"/>
+                    </linearGradient>
+                    <linearGradient id="nodeGradError" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#dc2626"/><stop offset="100%" style="stop-color:#991b1b"/>
+                    </linearGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Arrows (drawn first so nodes appear on top) -->
+                <g id="arrows" fill="none" stroke="#374151" stroke-width="1.5" marker-end="url(#arrowhead)" stroke-dasharray="6,4">
+                    <path d="M 95 70 L 155 70" class="state-arrow" data-from="IDLE" data-to="INTENT_ANALYSIS"/>
+                    <path d="M 245 70 L 305 70" class="state-arrow" data-from="INTENT_ANALYSIS" data-to="CODE_GENERATION"/>
+                    <path d="M 395 70 L 455 70" class="state-arrow" data-from="CODE_GENERATION" data-to="BUILD_TEST"/>
+                    <path d="M 555 70 L 605 90 L 605 115 L 495 115 L 495 95" class="state-arrow" data-from="BUILD_TEST" data-to="BUG_FIX"/>
+                    <path d="M 650 70 L 710 70" class="state-arrow" data-from="BUILD_TEST" data-to="COMPLETE"/>
+                    <path d="M 680 95 L 680 115 L 575 115 L 575 95" class="state-arrow" data-from="BUG_FIX" data-to="COMPLETE_ALT"/>
+                    <path d="M 430 95 L 430 115 L 220 115 L 220 95" class="state-arrow" data-from="BUG_FIX" data-to="MANUAL"/>
+                </g>
+
+                <!-- State Nodes -->
+                <g id="nodes">
+                    <g class="state-node" data-state="IDLE" transform="translate(25, 45)">
+                        <rect width="70" height="50" rx="8" fill="url(#nodeGradIdle)" stroke="#4b5563" stroke-width="1"/>
+                        <text x="35" y="30" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="600" class="mono">IDLE</text>
+                    </g>
+                    <g class="state-node" data-state="INTENT_ANALYSIS" transform="translate(160, 45)">
+                        <rect width="85" height="50" rx="8" fill="url(#nodeGradIdle)" stroke="#4b5563" stroke-width="1"/>
+                        <text x="42.5" y="23" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="600" class="mono">INTENT</text>
+                        <text x="42.5" y="36" text-anchor="middle" fill="#64748b" font-size="8" class="mono">ANALYSIS</text>
+                    </g>
+                    <g class="state-node" data-state="CODE_GENERATION" transform="translate(310, 45)">
+                        <rect width="85" height="50" rx="8" fill="url(#nodeGradIdle)" stroke="#4b5563" stroke-width="1"/>
+                        <text x="42.5" y="23" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="600" class="mono">CODE</text>
+                        <text x="42.5" y="36" text-anchor="middle" fill="#64748b" font-size="8" class="mono">GENERATION</text>
+                    </g>
+                    <g class="state-node" data-state="BUILD_TEST" transform="translate(460, 45)">
+                        <rect width="90" height="50" rx="8" fill="url(#nodeGradIdle)" stroke="#4b5563" stroke-width="1"/>
+                        <text x="45" y="23" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="600" class="mono">BUILD</text>
+                        <text x="45" y="36" text-anchor="middle" fill="#64748b" font-size="8" class="mono">TEST</text>
+                    </g>
+                    <g class="state-node" data-state="BUG_FIX" transform="translate(565, 70)">
+                        <rect width="72" height="46" rx="8" fill="url(#nodeGradIdle)" stroke="#4b5563" stroke-width="1"/>
+                        <text x="36" y="21" text-anchor="middle" fill="#94a3b8" font-size="9" font-weight="600" class="mono">BUG</text>
+                        <text x="36" y="34" text-anchor="middle" fill="#64748b" font-size="8" class="mono">FIX</text>
+                    </g>
+                    <g class="state-node" data-state="COMPLETE" transform="<arg_value>(720, 45)">
+                        <rect width="80" height="50" rx="8" fill="url(#nodeGradIdle)" stroke="#4b5563" stroke-width="1"/>
+                        <text x="40" y="30" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="600" class="mono">COMPLETE</text>
+                    </g>
+                    <g class="state-node" data-state="MANUAL_INTERVENTION" transform="translate(180, 92)">
+                        <rect width="86" height="42" rx="8" fill="url(#nodeGradIdle)" stroke="#4b5563" stroke-width="1"/>
+                        <text x="43" y="18" text-anchor="middle" fill="#94a3b8" font-size="8" font-weight="600" class="mono">MANUAL</text>
+                        <text x="43" y="30" text-anchor="middle" fill="#64748b" font-size="7" class="mono">INTERVENTION</text>
+                    </g>
+                </g>
+            </svg>
+        </div>
+
+        <!-- Thought Logs / Event Stream -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-2 border-b border-[--border-color]">
+                <h3 class="text-xs font-semibold text-[--text-secondary] uppercase tracking-wider">Thought Logs &amp; Event Stream</h3>
+                <div class="flex items-center gap-3">
+                    <button onclick="clearLogs()" class="text-[10px] text-[--text-muted] hover:text-[--text-secondary] transition-colors">Clear</button>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                        <span class="text-[10px] text-[--text-muted]">Inner Loop</span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-orange-400 ml-2"></span>
+                        <span class="text-[10px] text-[--text-muted]">Outer Loop</span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-400 ml-2"></span>
+                        <span class="text-[10px] text-[--text-muted]">Success</span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-400 ml-2"></span>
+                        <span class="text-[10px] text-[--text-muted]">Error</span>
+                    </div>
+                </div>
+            </div>
+            <div id="logContainer" class="flex-1 overflow-y-auto p-4 space-y-2 font-mono text-xs">
+                <div class="text-[--text-muted] text-center py-8">Waiting for Agent launch...</div>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- ═══ RIGHT PANEL: Digital Workspace ═══ -->
+    <aside class="w-96 glass-panel border-l border-[--border-color] flex flex-col overflow-hidden">
+        
+        <!-- Workspace Header -->
+        <div class="p-4 border-b border-[--border-color]">
+            <div class="flex items-center justify-between mb-1">
+                <h2 class="text-sm font-semibold text-[--text-secondary] uppercase tracking-wider">Digital Workspace</h2>
+                <span class="text-[10px] text-[--text-muted] mono">generated-workspace/</span>
+            </div>
+            <!-- Progress Ring -->
+            <div class="flex items-center gap-3 mt-2">
+                <svg class="progress-ring w-10 h-10" viewBox="0 0 36 36">
+                    <circle cx="18" cy="18" r="15.5" fill="none" stroke="#1e293b" stroke-width="3"/>
+                    <circle id="progressCircle" class="progress-ring-circle" cx="18" cy="18" r="15.5" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="97.39" stroke-dashoffset="97.39" stroke-linecap="round"/>
+                </svg>
+                <div class="flex-1">
+                    <div class="text-xs font-medium" id="workspaceStage">Ready</div>
+                    <div class="w-full h-1.5 bg-[--bg-secondary] rounded-full mt-1.5 overflow-hidden">
+                        <div id="progressBar" class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-500" style="width:0%"></div>
+                    </div>
+                </div>
+                <span class="text-xs font-bold text-[--accent-cyan]" id="progressPct">0%</span>
+            </div>
+        </div>
+
+        <!-- File Tree -->
+        <div class="flex-shrink-0 border-b border-[--border-color]">
+            <div class="px-3 py-1.5 text-[10px] font-semibold text-[--text-muted] uppercase tracking-wider bg-[--bg-secondary]/50">File Tree</div>
+            <div id="fileTree" class="max-h-52 overflow-y-auto py-1 text-xs">
+                <div class="text-[--text-muted] text-center py-4 text-[11px]">No files generated yet</div>
+            </div>
+        </div>
+
+        <!-- Code Preview -->
+        <div class="flex-1 flex flex-col overflow-hidden min-h-0">
+            <div class="flex items-center justify-between px-3 py-1.5 border-b border-[--border-color] bg-[--bg-secondary]/30">
+                <span id="previewFileName" class="text-[10px] font-mono text-[--text-muted]">Select a file to preview</span>
+                <div class="flex gap-1">
+                    <button onclick="setPreviewTab('source')" class="preview-tab active text-[10px] px-2 py-0.5 rounded bg-[--bg-secondary] text-[--text-secondary]" data-tab="source">Source</button>
+                    <button onclick="setPreviewTab('test')" class="preview-tab text-[10px] px-2 py-0.5 rounded text-[--text-muted] hover:text-[--text-secondary]" data-tab="test">Test Output</button>
+                </div>
+            </div>
+            <pre id="codePreview" class="flex-1 overflow-auto p-3 m-0 text-[11px] leading-5 text-[--text-secondary] bg-[--bg-primary]/50 mono"><span class="text-[--text-muted]">// Code preview will appear here after generation...</span></pre>
+        </div>
+
+        <!-- Defense Architecture Diagram (collapsible) -->
+        <details class="border-t border-[--border-color]">
+            <summary class="px-4 py-2 text-xs font-semibold text-[--text-secondary] cursor-pointer hover:text-[--text-primary] transition-colors flex items-center gap-2">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                Defense-in-Depth Architecture
+            </summary>
+            <div class="mermaid-container mx-2 mb-2">
+                <div class="mermaid">
+graph TB
+    subgraph Layer0["Layer 0: LLM Output"]
+        OP[Output Parser<br/><span class='text-xs'>JSON Schema Validation</span>]
+    end
+    subgraph Layer1["Layer 1: Semantic Validator"]
+        AST[AST Analyzer<br/><span class='text-xs'>JavaParser Static Analysis</span>]
+        SEM[Semantic Checker<br/><span class='text-xs'>API Existence Verification</span>]
+        NC[Naming Convention<br/><span class='text-xs'>Jakarta EE 11 Rules</span>]
+    end
+    subgraph Layer2["Layer 2: Security Sandbox"]
+        FS[FileSystem Sandbox<br/><span class='text-xs'>Path.normalize + Prefix Check</span>]
+        PS[Process Sandbox<br/><span class='text-xs'>SecureMavenExecutor</span>]
+        CL[ClassLoader Sandbox<br/><span class='text-xs'>IsolatedClassLoader</span>]
+    end
+    subgraph Layer3["Layer 3: Build Gate"]
+        MV[Maven Compile<br/><span class='text-xs'>E02 Detection</span>]
+        JT[JUnit5 Test<br/><span class='text-xs'>E06 Detection</span>]
+    end
+    subgraph Layer4["Layer 4: Self-Healing Loop"]
+        EC[ErrorClassifier<br/><span class='text-xs'>E01-E07 Mapping</span>]
+        FPG[FixPromptGenerator<br/><span class='text-xs'>Context-Aware Repair</span>]
+        RC[RetryController<br/><span class='text-xs'>Exponential Backoff</span>]
+    end
+
+    OP -->|catch E01| AST --> SEM --> NC --> FS --> PS --> CL --> MV --> JT --> EC --> FPG --> RC
+    
+    style Layer0 fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
+    style Layer1 fill:#1e3a5f,stroke:#06b6d4,color:#67e8f9
+    style Layer2 fill:#3b1a1a,stroke:#ef4444,#fca5a5
+    style Layer3 fill:#1a3a1e,stroke:#10b981,#6ee7b7
+    style Layer4 fill:#3a2e1a,stroke:#f59e0b,#fcd34d
+                </div>
+            </div>
+        </details>
+    </aside>
+</div>
+
+<!-- ═══════════════════ SCRIPTS ═══════════════════ -->
+<script>
+// ────────────────────────────── Mermaid Init ──────────────────────────────
+mermaid.initialize({ 
+    startOnLoad: true, 
+    theme: 'dark',
+    themeVariables: {
+        primaryColor: '#1e3a5f',
+        primaryTextColor: '#e2e8f0',
+        primaryBorderColor: '#3b82f6',
+        lineColor: '#475569',
+        secondaryColor: '#111827',
+        tertiaryColor: '#1a2235',
+        fontSize: '11px'
+    },
+    flowchart: { htmlLabels: true, useMaxWidth: true }
+});
+
+// ────────────────────────────── Global State ──────────────────────────────
+const STATE_ORDER = ['IDLE','INTENT_ANALYSIS','CODE_GENERATION','BUILD_TEST','BUG_FIX','COMPLETE','MANUAL_INTERVENTION'];
+const STATE_COLORS = {
+    IDLE: { bg: '#374151', text: '#9ca3af', label: 'SLATE' },
+    INTENT_ANALYSIS: { bg: '#1e40af', text: '#93c5fd', label: 'BLUE' },
+    CODE_GENERATION: { bg: '#7c3aed', text: '#c4b5fd', label: 'PURPLE' },
+    BUILD_TEST: { bg: '#b45309', text: '#fcd34d', label: 'AMBER' },
+    BUG_FIX: { bg: '#dc2626', text: '#fca5a5', label: 'RED' },
+    COMPLETE: { bg: '#059669', text: '#6ee7b7', label: 'GREEN' },
+    MANUAL_INTERVENTION: { bg: '#be185d', text: '#f9a8d4', label: 'PINK' }
+};
+
+let agentRunning = false;
+let faultEnabled = false;
+let currentFaultType = 'E02';
+let healingRounds = 0;
+let startTime = null;
+let timerInterval = null;
+
+// Simulated file system state
+const workspaceFiles = {};
+
+// ────────────────────────────── UI Helpers ──────────────────────────────
+
+function toggleTech(el) {
+    el.classList.toggle('selected');
+}
+
+function onFaultToggle(enabled) {
+    faultEnabled = enabled;
+    document.getElementById('faultDetail').classList.toggle('hidden', !enabled);
+    if (enabled) {
+        addLog('WARN', 'FAULT SIMULATION ENABLED — Agent will encounter errors during pipeline execution', 'error');
+    } else {
+        addLog('INFO', 'Fault simulation disabled — clean run mode', 'system');
+    }
+}
+
+function setProgress(pct, stage) {
+    const circle = document.getElementById('progressCircle');
+    const circumference = 97.39;
+    circle.style.strokeDashoffset = circumference - (pct / 100) * circumference;
+    
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = Math.round(pct) + '%';
+    document.getElementById('workspaceStage').textContent = stage || '';
+}
+
+function activateState(stateName) {
+    // Update all nodes
+    document.querySelectorAll('.state-node').forEach(node => {
+        const s = node.dataset.state;
+        const isActive = s === stateName;
+        const isCompleted = STATE_ORDER.indexOf(s) < STATE_ORDER.indexOf(stateName) && !['MANUAL_INTERVENTION'].includes(s);
+        
+        node.classList.toggle('active', isActive);
+        node.classList.toggle('completed', isCompleted && !isActive);
+        
+        const rect = node.querySelector('rect');
+        if (isActive) {
+            rect.setAttribute('fill', `url(#nodeGradActive)`);
+            rect.setAttribute('stroke', '#06b6d4');
+            rect.setAttribute('stroke-width', '2');
+            rect.setAttribute('filter', 'url(#glow)');
+        } else if (isCompleted) {
+            rect.setAttribute('fill', `url(#nodeGradComplete)`);
+            rect.setAttribute('stroke', '#10b981');
+            rect.setAttribute('stroke-width', '1');
+            rect.removeAttribute('filter');
+        } else {
+            rect.setAttribute('fill', `url(#nodeGradIdle)`);
+            rect.setAttribute('stroke', '#4b5563');
+            rect.setAttribute('stroke-width', '1');
+            rect.removeAttribute('filter');
+        }
+        
+        // Update text colors
+        const texts = node.querySelectorAll('text');
+        texts.forEach(t => {
+            t.setAttribute('fill', isActive ? '#ffffff' : isCompleted ? '#6ee7b7' : '#94a3b8');
+        });
+    });
+
+    // Update arrows
+    document.querySelectorAll('.state-arrow').forEach(arrow => {
+        const fromState = arrow.dataset.from;
+        const fromIdx = STATE_ORDER.indexOf(fromState);
+        const curIdx = STATE_ORDER.indexOf(stateName);
+        const isActive = fromIdx === curIdx - 1 || 
+                         (fromState === 'BUILD_TEST' && stateName === 'BUG_FIX') ||
+                         (fromState === 'BUG_FIX' && stateName === 'COMPLETE') ||
+                         (fromState === 'BUG_FIX' && stateName === 'MANUAL_INTERVENTION');
+        
+        arrow.classList.toggle('active', isActive);
+        if (isActive) {
+            arrow.setAttribute('marker-end', 'url(#arrowhead-active)');
+            arrow.setAttribute('stroke', '#06b6d4');
+        } else {
+            arrow.setAttribute('marker-end', 'url(#arrowhead)');
+            arrow.setAttribute('stroke', '#374151');
+        }
+    });
+
+    // Update label
+    const label = document.getElementById('currentStateLabel');
+    label.textContent = stateName.replace(/_/g, ' ');
+    const colorInfo = STATE_COLORS[stateName];
+    if (colorInfo) {
+        label.className = `text-xs px-2 py-0.5 rounded-full font-bold mono`;
+        label.style.backgroundColor = colorInfo.bg + '33';
+        label.style.color = colorInfo.text;
+        label.style.border = `1px solid ${colorInfo.bg}66`;
+    }
+
+    // Update global status
+    const gs = document.getElementById('globalStatus');
+    gs.textContent = stateName === 'COMPLETE' ? 'PIPELINE COMPLETE' : stateName.replace(/_/g,' ');
+    gs.style.color = stateName === 'COMPLETE' ? '#10b981' : stateName === 'BUG_FIX' ? '#ef4444' : '#94a3b8';
+}
+
+// ────────────────────────────── Logging System ──────────────────────────────
+
+function addLog(type, message, category, extra) {
+    const container = document.getElementById('logContainer');
+    if (container.querySelector('.text-\\[--text-muted\\]')) container.innerHTML = '';
+
+    const colors = {
+        'system': { icon: '⚙️', bg: 'rgba(100,116,139,0.1)', border: '#475569', dot: '#64748b' },
+        'info':   { icon: 'ℹ️', bg: 'rgba(59,130,246,0.08)', border: '#3b82f6', dot: '#3b82f6' },
+        'inner':  { icon: '🔄', bg: 'rgba(59,130,246,0.08)', border: '#60a5fa', dot: '#60a5fa' },
+        'outer':  { icon: '🔧', bg: 'rgba(245,158,11,0.08)', border: '#f59e0b', dot: '#f59e0b' },
+        'success':{ icon: '✅', bg: 'rgba(16,185,129,0.08)', border: '#10b981', dot: '#10b981' },
+        'error':  { icon: '❌', bg: 'rgba(239,68,68,0.08)', border: '#ef4444', dot: '#ef4444' },
+        'warn':   { icon: '⚠️', bg: 'rgba(245,158,11,0.08)', border: '#f59e0b', dot: '#f59e0b' },
+        'fix':    { icon: '🩹', bg: 'rgba(139,92,246,0.08)', border: '#8b5cf6', dot: '#8b5cf6' },
+    };
+    const cfg = colors[category] || colors.info;
+    const ts = new Date().toLocaleTimeString('en-US', { hour12: false });
+
+    const entry = document.createElement('div');
+    entry.className = 'log-entry rounded-lg p-2.5 border ' + cfg.bg;
+    entry.style.borderColor = cfg.border + '33';
+    entry.innerHTML = `
+        <div class="flex items-start gap-2.5">
+            <span class="flex-shrink-0 w-1.5 h-1.5 rounded-full mt-1.5" style="background:${cfg.dot}"></span>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="text-[10px] font-semibold uppercase" style="color:${cfg.dot}">${type}</span>
+                    <span class="text-[10px] text-[--text-muted]">${ts}</span>
+                </div>
+                <div class="text-[--text-primary] leading-relaxed whitespace-pre-wrap">${message}</div>
+                ${extra ? `<div class="mt-1.5 text-[10px] text-[--text-muted] border-t border-[--border-color]/30 pt-1.5 mono">${extra}</div>` : ''}
+            </div>
+        </div>`;
+    container.appendChild(entry);
+    container.scrollTop = container.scrollHeight;
+}
+
+function clearLogs() {
+    document.getElementById('logContainer').innerHTML = '<div class="text-[--text-muted] text-center py-8">Logs cleared.</div>';
+}
+
+// ────────────────────────────── File Tree & Code Preview ───────────────────
+
+function renderFileTree(files) {
+    const container = document.getElementById('fileTree');
+    if (!files || Object.keys(files).length === 0) {
+        container.innerHTML = '<div class="text-[--text-muted] text-center py-4 text-[11px]">No files generated yet</div>';
+        return;
+    }
+
+    let html = '<div class="px-2">';
+    const sortedKeys = Object.keys(files).sort();
+    sortedKeys.forEach(path => {
+        const name = path.split('/').pop();
+        const icon = getFileIcon(name);
+        html += `
+        <div class="file-tree-item flex items-center gap-2 px-2 py-1 rounded cursor-pointer mx-1" onclick="selectFile('${path}')">
+            ${icon}
+            <span class="truncate mono text-[11px]">${name}</span>
+        </div>`;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function getFileIcon(name) {
+    if (name.endsWith('.java')) return '<span class="text-orange-400 text-xs">☕</span>';
+    if (name.endsWith('.xml')) return '<span class="text-red-400 text-xs">📋</span>';
+    if (name.endsWith('.yml') || name.endsWith('.yaml')) return '<span class="text-pink-400 text-xs">⚙️</span>';
+    return '<span class="text-[--text-muted] text-xs">📄</span>';
+}
+
+function selectFile(path) {
+    document.querySelectorAll('.file-tree-item').forEach(el => el.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
+    
+    const content = workspaceFiles[path] || '// File not loaded';
+    document.getElementById('previewFileName').textContent = path;
+    document.getElementById('codePreview').innerHTML = highlightJava(content, path);
+}
+
+function setPreviewTab(tab) {
+    document.querySelectorAll('.preview-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === tab);
+        t.classList.toggle('bg-[--bg-secondary]', t.dataset.tab === tab);
+        t.classList.toggle('text-[--text-secondary]', t.dataset.tab === tab);
+    });
+}
+
+function highlightJava(code, filename) {
+    if (!filename?.endsWith('.java')) return escapeHtml(code);
+    const lines = code.split('\n');
+    return lines.map((line, i) => {
+        let escaped = escapeHtml(line);
+        escaped = escaped.replace(/\b(public|private|protected|class|interface|enum|import|package|return|new|void|int|String|boolean|long|List|Set|Map|Optional)\b/g, '<span style="color:#c084fc">$1</span>');
+        escaped = escaped.replace(/\b(@\w+)\b/g, '<span style="color:#fbbf24">$1</span>');
+        escaped = escaped.replace(/(\/\/.*$)/g, '<span style="color:#64748b">$1</span>');
+        escaped = escaped.replace(/(".+?")/g, '<span style="color:#34d399">$1</span>');
+        return `<div class="code-line flex"><span class="inline-block w-8 text-right mr-3 text-[--text-muted] select-none">${i+1}</span><span>${escaped || '&nbsp;'}</span></div>`;
+    }).join('');
+}
+
+function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function updateWorkspaceFile(path, content) {
+    workspaceFiles[path] = content;
+    renderFileTree(workspaceFiles);
+}
+
+// ────────────────────────────── Agent Pipeline Simulation ─────────────────
+
+async function startAgent() {
+    if (agentRunning) return;
+    const req = document.getElementById('requirementInput').value.trim();
+    if (!req) {
+        addLog('ERROR', 'Please enter a requirement before launching.', 'error');
+        return;
+    }
+
+    agentRunning = true;
+    healingRounds = 0;
+    document.getElementById('launchBtn').disabled = true;
+    document.getElementById('launchBtn').innerHTML = '<span class="pulse-dot inline-block w-2 h-2 rounded-full bg-white mr-2"></span>Agent Running...';
+    document.getElementById('launchBtn').classList.add('opacity-70', 'cursor-not-allowed');
+    document.getElementById('statRetries').textContent = '0/3';
+
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+        const elapsed = Math.round((Date.now() - startTime) / 1000);
+        document.getElementById('statDuration').textContent = elapsed;
+    }, 1000);
+
+    addLog('SYSTEM', `Agent Pipeline launched for task: task-${Date.now().toString(36).toUpperCase()}`, 'system');
+
+    try {
+        await runPipeline(req);
+    } catch (e) {
+        addLog('FATAL', 'Agent encountered unexpected error: ' + e.message, 'error');
+    } finally {
+        stopAgent();
+    }
+}
+
+function stopAgent() {
+    agentRunning = false;
+    clearInterval(timerInterval);
+    const elapsed = Math.round((Date.now() - startTime) / 1000);
+    document.getElementById('statDuration').textContent = elapsed + 's';
+    
+    const btn = document.getElementById('launchBtn');
+    btn.disabled = false;
+    btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Launch Agent Pipeline';
+    btn.classList.remove('opacity-70', 'cursor-not-allowed');
+}
+
+async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function runPipeline(requirement) {
+
+    // ═══ STAGE 1: INTENT ANALYSIS ═══
+    activateState('INTENT_ANALYSIS');
+    setProgress(5, 'Analyzing requirement...');
+    addLog('STAGE', '▶ INTENT_ANALYSIS started', 'info');
+    addLog('INNER', 'Sending requirement to AnalysisAiService with JSON Schema constraint...', 'inner');
+    await sleep(1200);
+
+    // Inner loop simulation (E01 format error)
+    if (faultEnabled && document.getElementById('faultType').value === 'E01') {
+        addLog('INNER', '⚠ LLM returned malformed JSON (missing "modules" field)', 'error');
+        await sleep(600);
+        addLog('INNER', '↻ OutputParser rejected — triggering Self-Correction retry #1', 'inner');
+        addLog('INNER', '  → Re-prompting with schema hint: "must include modules[], dependencies[]"', 'inner');
+        await sleep(800);
+        addLog('INNER', '✓ Retry successful — RequirementSpec parsed & validated', 'success');
+    } else {
+        addLog('INNER', '✓ RequirementSpec parsed successfully (JSON Schema validated)', 'success');
+    }
+    
+    await sleep(500);
+    addLog('STAGE', '✅ INTENT_ANALYSIS complete — RequirementSpec with 5 modules resolved', 'success', 
+`Modules identified:
+  • UserController (REST Controller)
+  • UserService (Business Logic)
+  • UserRepository (JPA Repository)
+  • UserEntity (JPA Entity)
+  • UserDto (Data Transfer Object)`);
+    setProgress(18, 'Intent analysis complete');
+
+
+    // ═══ STAGE 2: CODE GENERATION ═══
+    activateState('CODE_GENERATION');
+    addLog('STAGE', '▶ CODE_GENERATION started — parallel module generation via Virtual Threads', 'info');
+    await sleep(800);
+
+    const genFiles = {
+        'src/main/java/com/example/entity/User.java': [
+            'package com.example.entity;',
+            '',
+            'import jakarta.persistence.*;',
+            'import lombok.Data;',
+            '',
+            '@Data',
+            '@Entity',
+            '@Table(name = "t_user")',
+            'public class User {',
+            '    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)',
+            '    private Long id;',
+            '    private String username;',
+            '    private String email;',
+            '    private LocalDateTime createdAt;',
+            '}',
+        ].join('\n'),
+        'src/main/java/com/example/repository/UserRepository.java': [
+            'package com.example.repository;',
+            '',
+            'import com.example.entity.User;',
+            'import org.springframework.data.jpa.repository.JpaRepository;',
+            'import org.springframework.data.domain.Page;',
+            'import org.springframework.data.domain.Pageable;',
+            '',
+            'public interface UserRepository extends JpaRepository<User, Long> {',
+            '    Page<User> findByUsernameContaining(String keyword, Pageable pageable);',
+            '}',
+        ].join('\n'),
+        'src/main/java/com/example/service/UserService.java': [
+            'package com.example.service;',
+            '',
+            'import com.example.dto.UserDto;',
+            'import com.example.entity.User;',
+            'import com.example.repository.UserRepository;',
+            'import lombok.RequiredArgsConstructor;',
+            'import org.springframework.data.domain.Page;',
+            'import org.springframework.data.domain.Pageable;',
+            'import org.springframework.stereotype.Service;',
+            'import org.springframework.transaction.annotation.Transactional;',
+            '',
+            '@Service',
+            '@RequiredArgsConstructor',
+            'public class UserService {',
+            '    private final UserRepository userRepository;',
+            '',
+            '    public Page<UserDto> findAll(Pageable pageable) {',
+            '        return userRepository.findAll(pageable)',
+            '            .map(this::toDto);',
+            '    }',
+            '',
+            '    public UserDto getUser(Long id) {',
+            '        User entity = userRepository.finddByUid(id.toString());',
+            '        return toDto(entity);',
+            '    }',
+            '',
+            '    private UserDto toDto(User user) {',
+            '        return new UserDto(user.getId(), user.getUsername());',
+            '    }',
+            '}',
+        ].join('\n'),
+        'src/main/java/com/example/controller/UserController.java': [
+            'package com.example.controller;',
+            '',
+            'import com.example.service.UserService;',
+            'import lombok.RequiredArgsConstructor;',
+            'import org.springframework.data.domain.Pageable;',
+            'import org.springframework.http.ResponseEntity;',
+            'import org.springframework.web.bind.annotation.*;',
+            '',
+            '@RestController',
+            '@RequiredArgsConstructor',
+            '@RequestMapping("/api/users")',
+            'public class UserController {',
+            '    private final UserService userService;',
+            '',
+            '    @GetMapping',
+            '    public ResponseEntity<?> list(Pageable pageable) {',
+            '        return ResponseEntity.ok(userService.findAll(pageable));',
+            '    }',
+            '',
+            '    @GetMapping("/{id}")',
+            '    public ResponseEntity<?> getById(@PathVariable Long id) {',
+            '        return ResponseEntity.ok(userService.getUser(id));',
+            '    }',
+            '}',
+        ].join('\n'),
+        'src/main/resources/application.yml': [
+            'server:',
+            '  port: 8080',
+            '',
+            'spring:',
+            '  datasource:',
+            '    url: jdbc:mysql://localhost:3306/jap_demo',
+            '    username: root',
+            '    password: ${DB_PASSWORD}',
+            '    driver-class-name: com.mysql.cj.jdbc.Driver',
+            '  jpa:',
+            '    hibernate:',
+            '      ddl-auto: update',
+            '    show-sql: false',
+            '',
+            'logging:',
+            '  level:',
+            '    com.example: DEBUG',
+        ].join('\n'),
+    };
+
+    // Simulate file-by-file generation
+    let fileIdx = 0;
+    for (const [path, content] of Object.entries(genFiles)) {
+        await sleep(300 + Math.random() * 400);
+        updateWorkspaceFile(path, content);
+        addLog('GEN', `Generated: ${path}`, 'info');
+        setProgress(18 + (++fileIdx) * 10, `Generating ${path.split('/').pop()}...`);
+    }
+
+    // Security validation
+    addLog('VALIDATE', 'Running multi-layer validation (AST + Semantic + Security)...', 'inner');
+    await sleep(600);
+
+    if (faultEnabled && document.getElementById('faultType').value === 'E05') {
+        addLog('SECURITY', '🔴 CRITICAL: Path traversal detected in generated code!', 'error',
+            `File f = new File("/etc/passwd");\n→ PathValidator.toRealPath(NOFOLLOW_LINKS) blocked symlink attack\n→ Resolved path escapes sandbox root`);
+        addLog('SECURITY', '↻ Forcing security fix — not counted against normal retry limit', 'warn');
+        await sleep(500);
+        addLog('SECURITY', '✓ Security fix applied — all paths now use sandbox-relative resolution', 'fix');
+    } else {
+        addLog('VALIDATE', '✅ All validations passed (Jakarta EE 11 compliant, no sandbox violations)', 'success');
+    }
+
+    setProgress(72, 'Code generation complete');
+
+
+    // ═══ STAGE 3: BUILD TEST ═══
+    activateState('BUILD_TEST');
+    addLog('STAGE', '▶ BUILD_TEST started — SecureMavenExecutor in isolated process', 'info');
+    addLog('BUILD', 'Process sandbox active:', 'info',
+        `• JVM args locked: -Xmx512m --add-opens whitelist\n• MAVEN_OPTS cleared (injection blocked)\n• Network whitelist: repo.maven.apache.org\n• Timeout: 120s`);
+    await sleep(1000);
+
+    if (faultEnabled && (document.getElementById('faultType').value === 'E02' || document.getElementById('faultType').value === 'E06')) {
+        // Simulate build failure
+        setProgress(78, 'Build failed!');
+        
+        const faultType = document.getElementById('faultType').value;
+        if (faultType === 'E02') {
+            activateState('BUG_FIX');
+            addLog('BUILD', '❌ Maven compile FAILURE — E02 detected', 'error',
+                `[ERROR] /generated-workspace/src/main/java/com/example/service/UserService.java:[42,35]\ncannot find symbol\n  symbol:   method finddByUid(java.lang.String)\n  location: class com.example.repository.UserRepository\n  Did you mean: findByUid()?`);
+        } else {
+            activateState('BUG_FIX');
+            addLog('TEST', '❌ JUnit5 test FAILURE — E06 detected', 'error',
+                `Tests run: 5, Failures: 1, Errors: 0, Skipped: 0\n\nUserServiceTest.getUser_whenExists_returnsUser FAILED\n    Expected: <UserDto(id=1, username=test)> \n         but: was: null\n    at UserServiceTest.java:38 (NullPointerException)`);
+        }
+
+        // Enter outer self-healing loop
+        await runSelfHealingLoop(faultType);
+
+    } else {
+        // Clean build success
+        await sleep(800);
+        addLog('BUILD', '✅ mvn clean test BUILD SUCCESS', 'success',
+            `Tests run: 5, Failures: 0, Errors: 0, Skipped: 0\nBuild time: 4.234s`);
+        setProgress(100, 'Build complete');
+        activateState('COMPLETE');
+        addLog('PIPELINE', '🎉 PIPELINE COMPLETE — Full closed-loop executed without errors', 'success',
+            `Total duration: ${Math.round((Date.now()-startTime)/1000)}s\nFiles generated: ${Object.keys(workspaceFiles).length}\nHealing rounds: ${healingRounds}`);
+    }
+}
+
+async function runSelfHealingLoop(faultType) {
+    const maxRounds = 3;
+    
+    for (let round = 1; round <= maxRounds; round++) {
+        healingRounds = round;
+        document.getElementById('statRetries').textContent = `${round}/${maxRounds}`;
+        activateState('BUG_FIX');
+        setProgress(78 + round * 5, `Self-healing round ${round}/${maxRounds}...`);
+
+        addLog('OUTER', `━━━ Self-Healing Round ${round}/${maxRounds} ━━━`, 'outer');
+        await sleep(500);
+
+        // Step 1: Error Classification
+        addLog('CLASSIFY', `ErrorClassifier mapping raw error → ${faultType}`, 'outer');
+        await sleep(400);
+        addLog('CLASSIFY', `ClassifiedError{category=${faultType}, file=UserService.java, line=42, severity=NORMAL}`, 'info');
+
+        // Step 2: Context Collection (parallel simulation)
+        addLog('CONTEXT', 'Collecting repair context (parallel)...', 'outer');
+        await sleep(300);
+        addLog('CONTEXT', '  ├─ Source window: lines 38-46 extracted', 'info');
+        addLog('CONTEXT', '  ├─ Available APIs: UserRepository.{findById,findByUid,findAll,save,deleteById}', 'info');
+        addLog('CONTEXT', '  └─ Vector Search: found 3 similar historical fixes', 'info');
+        await sleep(400);
+
+        // Step 3: Fix Prompt Generation
+        addLog('FIXPROMPT', 'FixPromptGenerator building structured repair instruction...', 'outer');
+        await sleep(500);
+        const fixHint = faultType === 'E02'
+            ? '"finddByUid" → should be "findByUid" (typo correction)'
+            : 'NPE caused by missing @MockBean for repository in test class';
+        addLog('FIXPROMPT', `Fix prompt ready: target=${faultType}, hint=${fixHint}`, 'info');
+
+        // Step 4: LLM Fix Request
+        addLog('LLM-FIX', `Sending fix request to FixAiService (temperature=0.1)...`, 'outer');
+        await sleep(800);
+        
+        // Typing indicator
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'log-entry rounded-lg p-2.5 border bg-purple-500/5 border-purple-500/20';
+        typingDiv.id = 'typingIndicator';
+        typingDiv.innerHTML = `<div class="flex items-center gap-2"><span class="typing-indicator flex gap-0.5"><span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span><span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span><span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span></span><span class="text-xs text-[--text-muted]">FixAiService generating repair...</span></div>`;
+        document.getElementById('logContainer').appendChild(typingDiv);
+        document.getElementById('logContainer').scrollTop = document.getElementById('logContainer').scrollHeight;
+        await sleep(1000);
+        typingDiv.remove();
+
+        addLog('LLM-FIX', '✓ FixAiService returned corrected code', 'success');
+
+        // Step 5: Patch Application
+        addLog('PATCH', 'PatchAppplier applying diff to UserService.java...', 'fix');
+        await sleep(400);
+
+        // Update the file content with fixed version
+        if (faultType === 'E02') {
+            const fixedService = [
+                'package com.example.service;',
+                '',
+                'import com.example.dto.UserDto;',
+                'import com.example.entity.User;',
+                'import com.example.repository.UserRepository;',
+                'import lombok.RequiredArgsConstructor;',
+                'import org.springframework.data.domain.Page;',
+                'import org.springframework.data.domain.Pageable;',
+                'import org.springframework.stereotype.Service;',
+                'import org.springframework.transaction.annotation.Transactional;',
+                '',
+                '@Service',
+                '@RequiredArgsConstructor',
+                'public class UserService {',
+                '    private final UserRepository userRepository;',
+                '',
+                '    public Page<UserDto> findAll(Pageable pageable) {',
+                '        return userRepository.findAll(pageable)',
+                '            .map(this::toDto);',
+                '    }',
+                '',
+                '    public UserDto getUser(Long id) {',
+                '        User entity = userRepository.findById(id)',
+                '            .orElseThrow(() -> new RuntimeException("User not found: " + id));',
+                '        return toDto(entity);',
+                '    }',
+                '',
+                '    private UserDto toDto(User user) {',
+                '        return new UserDto(user.getId(), user.getUsername());',
+                '    }',
+                '}',
+            ].join('\n');
+            updateWorkspaceFile('src/main/java/com/example/service/UserService.java', fixedService);
+            addLog('PATCH', '✓ Patch applied: finddByUid → findById + orElseThrow', 'fix');
+        } else {
+            addLog('PATCH', '✓ Patch applied: added @MockBean + fixed NPE guard', 'fix');
+        }
+
+        // Step 6: Rebuild
+        addLog('REBUILD', `Rebuilding... (Round ${round})`, 'outer');
+        await sleep(800);
+
+        // Simulate: Round 1 fails, Round 2 might fail, Round 3 succeeds
+        if (round < 2 && faultType === 'E02') {
+            addLog('BUILD', `❌ Still failing after round ${round} — new error introduced`, 'error',
+                `[ERROR] UserController.java:28\nvariable userDto might not have been initialized`);
+            addLog('OUTER', `Backoff: ${Math.pow(2, round)}s before next attempt`, 'warn');
+            await sleep(600);
+        } else if (round < 2 && faultType === 'E06') {
+            addLog('TEST', `❌ Test still failing after round ${round}`, 'error',
+                `AssertionError: expected:<test_user> but was:<null>\nat UserServiceTest.java:42`);
+            await sleep(600);
+        } else {
+            // Success!
+            addLog('BUILD', '✅ mvn clean test BUILD SUCCESS after healing!', 'success',
+                `Tests run: 5, Failures: 0, Errors: 0, Skipped: 0\nBuild time: 3.891s`);
+            
+            setProgress(100, 'Healed!');
+            activateState('COMPLETE');
+            addLog('PIPELINE', `🎉 PIPELINE COMPLETE — Self-Healing succeeded in ${round} round(s)`, 'success',
+                `Total duration: ${Math.round((Date.now()-startTime)/1000)}s\nFiles generated: ${Object.keys(workspaceFiles).length}\nHealing rounds: ${healingRounds}\nFault type: ${faultType}`);
+            return;
+        }
+    }
+
+    // Exhausted
+    addLog('OUTER', '━━━ Self-Healing EXHAUSTED (3 rounds) ━━━', 'error');
+    activateState('MANUAL_INTERVENTION');
+    setProgress(100, 'Manual intervention required');
+    addLog('SYSTEM', '⚠ Transitioning to MANUAL_INTERVENTION — full context preserved for human review', 'warn',
+        `Context saved:\n  • Original requirement\n  • All generated files (${Object.keys(workspaceFiles).length})\n  • Healing history (${healingRounds} rounds)\n  • Error reports (all rounds)\n  • Vector similarity search results\n\nAction required: Review healing records and manually fix remaining issue.`);
+}
+
+// ────────────────────────────── Initialize ──────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('requirementInput').value = '实现一个用户管理的 RESTful API，支持 CRUD 操作和分页查询，使用 MySQL 存储。需要包含 Service 层、Repository 层和完整的单元测试。';
+});
+</script>
+</body>
+</html>

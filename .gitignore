@@ -1,0 +1,89 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Logs
+logs/
+*.log
+*.tmp
+*.log.*
+
+# Runtime data
+*.pem
+*.p12
+*.key
+*.jks
+*.pfx
+*.p8
+
+# Local env files
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS generated files
+Thumbs.db
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.classpath
+.project
+.settings/
+
+# Temporary files
+*.swp
+*.swo
+*~
+.fseventsd/
+.Spotlight-V100/
+.TemporaryItems/
+.Trashes/
+.VolumeIcon.icns
+
+# Spring Boot
+spring-boot-devtools.properties
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# LLM API Keys
+*.key
+api.key
+keys/
+
+# Generated workspace
+generated-workspace/
+
+# Configuration files with sensitive information
+config/settings.json
