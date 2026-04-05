@@ -1,0 +1,14 @@
+{
+  "llm": {
+    "baseUrl": "https://api.deepseek.com",
+    "apiKey": "",
+    "modelName": "deepseek-chat",
+    "temperature": 0.3,
+    "maxTokens": 4096,
+    "timeoutSeconds": 300
+  },
+  "workspace": {
+    "path": "generated-workspace",
+    "createIfNotExists": true
+  }
+}

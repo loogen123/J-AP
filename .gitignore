@@ -87,3 +87,12 @@ generated-workspace/
 
 # Configuration files with sensitive information
 config/settings.json
+
+# Local build/distribution outputs
+dist/
+release/
+META-INF/
+J-AP-Distribution/
+
+# Local vendor/temp files
+src/main/resources/static/tailwind.min.css

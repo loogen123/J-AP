@@ -1,174 +1,59 @@
-# J-AP (J-Architect-Pilot) 2026
+﻿# J-AP (J-Architect-Pilot) 2026
 
-> Industrial-grade Java AI Agent Engine with Self-Healing Closed-Loop
+工业级 Java AI Agent 引擎，支持从需求到设计、代码生成、构建测试与自愈修复的闭环流程。
 
-## 🚀 项目简介
+## 核心能力
+- 需求分析与设计文档生成
+- Java 后端代码自动生成
+- 构建/测试自动执行
+- 失败后自动修复重试
+- WebSocket 实时进度与日志
+- 配置面板支持动态设置 LLM 与工作目录
 
-J-AP 是一个工业级的 Java AI Agent 引擎，具有自修复闭环能力。它能够根据用户需求自动生成完整的 Java Web 应用程序，并在遇到错误时自动尝试修复，实现了真正的端到端开发流程自动化。
+## 技术栈
+- Java 17
+- Spring Boot 3.4.4
+- LangChain4j 1.0.0-beta1
+- H2 / MySQL / Redis（按场景）
+- 前端：静态 HTML + 本地 Tailwind 运行时
 
-## ✨ 核心特性
-
-- 🤖 **智能需求分析**：自动理解用户需求并生成技术规范
-- 🏗️ **架构设计**：自动设计系统架构和模块划分
-- 📝 **代码生成**：基于设计自动生成完整的 Java 代码
-- 🔧 **自动修复**：遇到编译错误时自动尝试修复
-- 🧪 **自动测试**：生成代码后自动运行测试验证
-- 🌐 **实时监控**：通过 WebSocket 实时监控生成进度
-- 📱 **流式原型**：实时生成前端原型，支持超时保护
-- 🔒 **安全沙箱**：所有操作在安全的沙箱环境中执行
-
-## 🚀 快速开始
-
-### 环境要求
-
-- JDK 17+
-- Maven 3.6+
-- Redis (可选，用于缓存)
-- LLM API Key (DeepSeek API)
-
-### 运行步骤
-
-1. **克隆项目**
-
+## 本地运行
+1. 构建：
 ```bash
-git clone https://github.com/your-username/j-architect-pilot.git
-cd j-architect-pilot
+mvn package -DskipTests
 ```
-
-2. **配置环境变量**
-
-在运行前设置 DeepSeek API Key：
-
+2. 启动：
 ```bash
-# Windows (PowerShell)
-$env:JAP_LLM_API_KEY="your-deepseek-api-key"
-
-# Linux/Mac
-export JAP_LLM_API_KEY=your-deepseek-api-key
+java -jar target/j-architect-pilot-2026.1.0-SNAPSHOT-exec.jar
 ```
+3. 打开：`http://localhost:8080`
 
-3. **编译项目**
-
-```bash
-mvn clean package
+## 面试版打包（Windows）
+已提供一键脚本：
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/build-release.ps1
 ```
+产物目录示例：`dist/build-YYYYMMDD-HHMMSS/J-AP/`
 
-4. **启动应用**
+可执行文件：`J-AP.exe`
 
-```bash
-java -jar target/j-architect-pilot-2026.1.0-SNAPSHOT.jar
-```
+## 面试官体验步骤
+1. 双击 `J-AP.exe`
+2. 浏览器访问 `http://localhost:8080`
+3. 打开右上角“系统设置”
+4. 填写 API Key 并保存
+5. 输入需求，开始体验设计/实现流程
 
-5. **访问界面**
+## 配置文件说明
+- 本地敏感配置：`config/settings.json`（已在 `.gitignore` 忽略）
+- 模板文件：`config/settings.template.json`
 
-打开浏览器访问：`http://localhost:8080`
+## 安全与提交规范
+- 不要提交任何真实 API Key
+- 提交前确认 `config/settings.json` 未被纳入版本控制
+- 构建产物目录（`target/`, `dist/`, `release/` 等）已忽略
 
-## 🛠️ 技术栈
-
-- **后端框架**: Spring Boot 3.4.4
-- **前端**: HTML5 + Tailwind CSS (CDN)
-- **LLM 集成**: LangChain4j 1.0.0-beta1
-- **数据库**: H2 (内存数据库)
-- **缓存**: Redis (可选)
-- **构建工具**: Maven
-- **Java 版本**: 17+
-
-## 📋 使用说明
-
-### 基本流程
-
-1. 在网页界面输入开发需求
-2. 点击"开始生成"按钮
-3. 实时查看生成进度和日志
-4. 生成完成后查看项目文件
-5. 可以下载生成的代码
-
-### 示例需求
-
-```
-开发一个简单的图书管理系统，包含以下功能：
-1. 用户登录和注册
-2. 图书的增删改查
-3. 借阅和归还功能
-4. 简单的统计报表
-使用 Spring Boot + MySQL 开发
-```
-
-### 环境变量配置
-
-| 变量名 | 描述 | 默认值 |
-|--------|------|--------|
-| JAP_LLM_API_KEY | DeepSeek API Key | (必填) |
-| JAP_LLM_BASE_URL | LLM API 基础地址 | https://api.deepseek.com |
-| JAP_LLM_MODEL | LLM 模型名称 | deepseek-chat |
-
-## 🔒 安全说明
-
-- 所有文件操作都在沙箱环境中执行，防止路径遍历攻击
-- API Key 通过环境变量配置，不会硬编码在代码中
-- 支持配置允许的网络访问主机
-
-### 敏感信息处理
-
-项目中包含以下可能包含敏感信息的文件，上传到GitHub前请确保：
-
-1. `config/settings.json` - 包含API密钥，请在上传前移除或替换为占位符
-2. `.env` 文件（如果存在）- 包含环境变量配置
-
-**建议**：在上传到GitHub前，创建一个 `.gitignore` 文件忽略这些敏感文件。
-
-## 📁 项目结构
-
-```
-j-architect-pilot/
-├── src/
-│   ├── main/
-│   │   ├── java/com/jap/
-│   │   │   ├── api/          # API 控制器和 WebSocket
-│   │   │   ├── config/       # 配置类
-│   │   │   ├── core/         # 核心业务逻辑
-│   │   │   ├── event/        # 事件发布
-│   │   │   ├── healing/      # 错误修复
-│   │   │   ├── llm/          # LLM 服务和工具
-│   │   │   ├── sandbox/      # 安全沙箱
-│   │   │   └── JapApplication.java
-│   │   └── resources/
-│   │       ├── static/       # 前端静态资源
-│   │       └── application.yml
-│   └── test/                 # 测试代码
-├── pom.xml                   # Maven 配置
-└── README.md                 # 项目说明
-```
-
-## 🤝 贡献指南
-
-欢迎提交 Issue 和 Pull Request！
-
-## 📄 许可证
-
-MIT License
-
-## 🆘 故障排除
-
-### 常见问题
-
-1. **编译错误**
-   - 确保 JDK 版本为 17+
-   - 检查 Maven 配置
-
-2. **LLM 连接失败**
-   - 检查 API Key 是否正确
-   - 确认网络连接正常
-
-3. **内存不足**
-   - 增加 JVM 内存：`java -Xmx2g -jar target/j-architect-pilot-2026.1.0-SNAPSHOT.jar`
-
-## 📞 联系方式
-
-如有问题，请通过以下方式联系：
-- GitHub Issues
-- Email: your-email@example.com
-
----
-
-**注意**: 本项目需要有效的 DeepSeek API Key 才能正常运行。请确保在运行前正确配置环境变量。
+## 常见问题
+- 页面样式异常：确认使用最新构建包，或刷新浏览器缓存（`Ctrl + F5`）
+- LLM 连接失败：检查 Base URL、API Key、网络连通性
+- 打包后无法启动：重新执行 `scripts/build-release.ps1` 生成新包
