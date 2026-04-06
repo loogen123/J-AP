@@ -75,6 +75,7 @@ public class JapAgent {
     private final AgentPauseManager pauseManager;
     private final dev.langchain4j.model.chat.ChatLanguageModel chatLanguageModel;
     private final com.jap.config.JapConfigManager configManager;
+    private final String taskWorkspaceDir;
 
     private volatile boolean cancelled = false;
     private int logCounter = 0;
@@ -115,6 +116,7 @@ public class JapAgent {
         this.pauseManager = pauseManager;
         this.chatLanguageModel = chatLanguageModel;
         this.configManager = configManager;
+        this.taskWorkspaceDir = "tasks/" + taskId;
     }
 
     public void setExecutionMode(ExecutionMode mode) {
@@ -130,6 +132,7 @@ public class JapAgent {
         long startTime = System.currentTimeMillis();
         
         ensureWorkspaceExists();
+        configManager.activateTaskLlmContext(taskId);
         
         startHeartbeat();
 
@@ -181,6 +184,8 @@ public class JapAgent {
             publishLog("ERROR", currentStatus.name(), "Agent failed", e.getMessage());
             stopHeartbeat();
             return JapAgentResult.failed(taskId, e.getMessage());
+        } finally {
+            configManager.clearThreadLlmContext();
         }
     }
 
@@ -384,8 +389,8 @@ public class JapAgent {
         int generatedCount = 0;
 
         try {
-            fileSystemTools.createDirectory("docs");
-            fileSystemTools.createDirectory("prototype");
+            fileSystemTools.createDirectory(taskPath("docs"));
+            fileSystemTools.createDirectory(taskPath("prototype"));
         } catch (SandboxViolationException e) {
             log.warn("[{}] Failed to create design directories", taskId, e);
         }
@@ -398,10 +403,11 @@ public class JapAgent {
         try {
             String prd = designAiService.generatePRD(requirement, packageName, databaseType);
             if (prd != null && !prd.isBlank()) {
-                fileSystemTools.writeFile("docs/1_PRD.md", prd, true);
-                generatedFilePaths.add("docs/1_PRD.md");
-                publisher.publishFileGenerated(taskId, "docs/1_PRD.md", prd.getBytes().length, "MARKDOWN");
-                publishLog("SUCCESS", "DESIGN", "PRD generated", "docs/1_PRD.md");
+                String prdPath = taskPath("docs/1_PRD.md");
+                fileSystemTools.writeFile(prdPath, prd, true);
+                generatedFilePaths.add(prdPath);
+                publisher.publishFileGenerated(taskId, prdPath, prd.getBytes().length, "MARKDOWN");
+                publishLog("SUCCESS", "DESIGN", "PRD generated", prdPath);
                 generatedCount++;
             }
         } catch (Exception e) {
@@ -420,10 +426,11 @@ public class JapAgent {
             String prdSummary = requirementSpec.summary() != null ? requirementSpec.summary() : requirement;
             String architecture = designAiService.generateArchitecture(requirement, prdSummary, packageName);
             if (architecture != null && !architecture.isBlank()) {
-                fileSystemTools.writeFile("docs/2_ARCHITECTURE.md", architecture, true);
-                generatedFilePaths.add("docs/2_ARCHITECTURE.md");
-                publisher.publishFileGenerated(taskId, "docs/2_ARCHITECTURE.md", architecture.getBytes().length, "MARKDOWN");
-                publishLog("SUCCESS", "DESIGN", "Architecture generated", "docs/2_ARCHITECTURE.md");
+                String architecturePath = taskPath("docs/2_ARCHITECTURE.md");
+                fileSystemTools.writeFile(architecturePath, architecture, true);
+                generatedFilePaths.add(architecturePath);
+                publisher.publishFileGenerated(taskId, architecturePath, architecture.getBytes().length, "MARKDOWN");
+                publishLog("SUCCESS", "DESIGN", "Architecture generated", architecturePath);
                 generatedCount++;
             }
         } catch (Exception e) {
@@ -452,18 +459,19 @@ public class JapAgent {
                 );
             
             com.jap.llm.streaming.StreamingHtmlGenerator.StreamingResult result = 
-                generator.generateWithStreaming(prototypePrompt, "prototype/index.html");
+                generator.generateWithStreaming(prototypePrompt, taskPath("prototype/index.html"));
             
             if (result.success() || result.isPartial()) {
-                generatedFilePaths.add("prototype/index.html");
+                String prototypePath = taskPath("prototype/index.html");
+                generatedFilePaths.add(prototypePath);
                 
                 if (result.success()) {
                     publishLog("SUCCESS", "DESIGN", "Prototype generated", 
-                        "prototype/index.html (" + result.charsWritten() + " chars)");
+                        prototypePath + " (" + result.charsWritten() + " chars)");
                     generatedCount++;
                 } else {
                     publishLog("WARN", "DESIGN", "Prototype partially generated", 
-                        "prototype/index.html (" + result.charsWritten() + " chars, incomplete)");
+                        prototypePath + " (" + result.charsWritten() + " chars, incomplete)");
                     generatedCount++;
                 }
             } else if (result.error() != null) {
@@ -616,7 +624,7 @@ public class JapAgent {
         publishLog("INFO", "BUILD_TEST", "BUILD_TEST started", "Executing Maven compile...");
         publishProgress(75, "Compiling generated code...");
 
-        Path projectPath = Path.of("");
+        Path projectPath = Path.of(taskWorkspaceDir);
         
         BuildResult initialBuild = mavenExecutor.executeCompile(projectPath);
         
@@ -754,14 +762,15 @@ public class JapAgent {
         try {
             String filePath = patch.filePath();
             String patchedContent = patch.patchedContent();
+            String taskScopedPath = taskPath(filePath);
 
-            fileSystemTools.writeFile(filePath, patchedContent, true);
+            fileSystemTools.writeFile(taskScopedPath, patchedContent, true);
 
-            publisher.publishFixAttempted(taskId, round, "E02", filePath, true);
-            publishLog("FIX", "BUILD_TEST", "Patch applied: " + filePath,
+            publisher.publishFixAttempted(taskId, round, "E02", taskScopedPath, true);
+            publishLog("FIX", "BUILD_TEST", "Patch applied: " + taskScopedPath,
                 patch.description() + " (round " + round + ")");
 
-            log.info("[{}] Applied patch to: {}", taskId, filePath);
+            log.info("[{}] Applied patch to: {}", taskId, taskScopedPath);
             return true;
 
         } catch (SandboxViolationException e) {
@@ -774,15 +783,15 @@ public class JapAgent {
 
     private void initializeProjectStructure(String packagePath) throws SandboxViolationException {
         String[] directories = {
-            "src/main/java/" + packagePath,
-            "src/main/java/" + packagePath + "/entity",
-            "src/main/java/" + packagePath + "/repository",
-            "src/main/java/" + packagePath + "/service",
-            "src/main/java/" + packagePath + "/controller",
-            "src/main/java/" + packagePath + "/dto",
-            "src/main/java/" + packagePath + "/config",
-            "src/main/resources",
-            "src/test/java/" + packagePath
+            taskPath("src/main/java/" + packagePath),
+            taskPath("src/main/java/" + packagePath + "/entity"),
+            taskPath("src/main/java/" + packagePath + "/repository"),
+            taskPath("src/main/java/" + packagePath + "/service"),
+            taskPath("src/main/java/" + packagePath + "/controller"),
+            taskPath("src/main/java/" + packagePath + "/dto"),
+            taskPath("src/main/java/" + packagePath + "/config"),
+            taskPath("src/main/resources"),
+            taskPath("src/test/java/" + packagePath)
         };
 
         for (String dir : directories) {
@@ -799,17 +808,18 @@ public class JapAgent {
         try {
             String path = file.path();
             String content = file.content();
+            String taskScopedPath = taskPath(path);
             
-            fileSystemTools.writeFile(path, content, true);
-            generatedFilePaths.add(path);
+            fileSystemTools.writeFile(taskScopedPath, content, true);
+            generatedFilePaths.add(taskScopedPath);
             
             String language = file.getLanguage();
             long size = content.getBytes().length;
             
-            publisher.publishFileGenerated(taskId, path, size, language);
+            publisher.publishFileGenerated(taskId, taskScopedPath, size, language);
             
-            log.info("[{}] Generated file: {} ({} bytes)", taskId, path, size);
-            publishLog("SUCCESS", "CODE_GENERATION", "File created: " + path, 
+            log.info("[{}] Generated file: {} ({} bytes)", taskId, taskScopedPath, size);
+            publishLog("SUCCESS", "CODE_GENERATION", "File created: " + taskScopedPath, 
                 language + " - " + size + " bytes");
             
             return true;
@@ -931,12 +941,31 @@ public class JapAgent {
                     java.nio.file.Files.createDirectories(workspacePath);
                     log.info("[{}] Created workspace directory: {}", taskId, workspacePath);
                 }
-                publishLog("INFO", "INIT", "Workspace ready", workspacePath.toString());
+                java.nio.file.Path taskWorkspacePath = workspacePath.resolve(taskWorkspaceDir).normalize();
+                if (!java.nio.file.Files.exists(taskWorkspacePath)) {
+                    java.nio.file.Files.createDirectories(taskWorkspacePath);
+                    log.info("[{}] Created task workspace directory: {}", taskId, taskWorkspacePath);
+                }
+                publishLog("INFO", "INIT", "Workspace ready", taskWorkspacePath.toString());
             }
         } catch (Exception e) {
             log.error("[{}] Failed to ensure workspace exists: {}", taskId, e.getMessage());
             publishLog("ERROR", "INIT", "Failed to create workspace", e.getMessage());
         }
+    }
+
+    private String taskPath(String relativePath) {
+        if (relativePath == null || relativePath.isBlank()) {
+            return taskWorkspaceDir;
+        }
+        String normalized = relativePath.replace("\\", "/");
+        if (normalized.startsWith(taskWorkspaceDir + "/") || normalized.equals(taskWorkspaceDir)) {
+            return normalized;
+        }
+        if (normalized.startsWith("/")) {
+            normalized = normalized.substring(1);
+        }
+        return taskWorkspaceDir + "/" + normalized;
     }
 
     public void cancel() {

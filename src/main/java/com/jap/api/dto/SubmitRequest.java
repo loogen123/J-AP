@@ -13,7 +13,9 @@ public record SubmitRequest(
 
     TaskOptions options,
 
-    FaultSimulation faultSimulation
+    FaultSimulation faultSimulation,
+
+    TaskLlmConfig llm
 ) {
     public SubmitRequest {
         if (options == null) {

@@ -1056,6 +1056,7 @@ async function startDesignOnly() {
 
     const faultEnabled = document.getElementById('faultToggle').checked;
     const faultType = document.getElementById('faultType').value;
+    const taskLlm = buildTaskLlmConfig();
     
     const requestBody = {
         requirement: req,
@@ -1066,7 +1067,8 @@ async function startDesignOnly() {
             maxFixRetries: 3,
             techStack: ['JDK_25', 'SPRING_BOOT_34', 'LANGCHAIN4J_10', 'MYSQL_9']
         },
-        faultSimulation: faultEnabled ? { enabled: true, faultType: faultType } : { enabled: false, faultType: null }
+        faultSimulation: faultEnabled ? { enabled: true, faultType: faultType } : { enabled: false, faultType: null },
+        llm: taskLlm
     };
 
     addLog('系统', '正在提交设计任务...', 'system');
@@ -1129,6 +1131,7 @@ async function startFullPipeline() {
 
     const faultEnabled = document.getElementById('faultToggle').checked;
     const faultType = document.getElementById('faultType').value;
+    const taskLlm = buildTaskLlmConfig();
     
     const requestBody = {
         requirement: req,
@@ -1139,7 +1142,8 @@ async function startFullPipeline() {
             maxFixRetries: 3,
             techStack: ['JDK_25', 'SPRING_BOOT_34', 'LANGCHAIN4J_10', 'MYSQL_9']
         },
-        faultSimulation: faultEnabled ? { enabled: true, faultType: faultType } : { enabled: false, faultType: null }
+        faultSimulation: faultEnabled ? { enabled: true, faultType: faultType } : { enabled: false, faultType: null },
+        llm: taskLlm
     };
 
     addLog('系统', '正在提交完整流水线任务...', 'system');
@@ -1272,6 +1276,23 @@ function updateLlmStatus(apiKeyConfigured) {
         statusEl.textContent = 'LLM: 未配置';
         statusEl.className = 'text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700';
     }
+}
+
+function buildTaskLlmConfig() {
+    const baseUrl = (document.getElementById('llmBaseUrl')?.value || '').trim();
+    const apiKey = (document.getElementById('llmApiKey')?.value || '').trim();
+    const modelName = (document.getElementById('llmModelName')?.value || '').trim();
+    if (!apiKey) {
+        return null;
+    }
+    return {
+        baseUrl: baseUrl || null,
+        apiKey: apiKey,
+        modelName: modelName || null,
+        temperature: 0.3,
+        maxTokens: 4096,
+        timeoutSeconds: 300
+    };
 }
 
 async function saveSettings() {

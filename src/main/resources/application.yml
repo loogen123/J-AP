@@ -35,6 +35,11 @@ spring:
       port: 6379
       timeout: 5000ms
 
+management:
+  health:
+    redis:
+      enabled: false
+
 jap:
   sandbox:
     base-dir: generated-workspace

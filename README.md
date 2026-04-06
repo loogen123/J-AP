@@ -43,6 +43,7 @@ powershell -ExecutionPolicy Bypass -File scripts/build-release.ps1
 3. 打开右上角“系统设置”
 4. 填写 API Key 并保存
 5. 输入需求，开始体验设计/实现流程
+6. 默认无需安装 Redis（已关闭 Redis 健康检查）
 
 ## 配置文件说明
 - 本地敏感配置：`config/settings.json`（已在 `.gitignore` 忽略）

@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Component
@@ -39,6 +40,9 @@ public class JapConfigManager {
     private volatile ChatLanguageModel chatLanguageModel;
     private volatile JapSettings currentSettings;
     private volatile Path currentWorkspacePath;
+    private final ConcurrentHashMap<String, LlmConfig> taskLlmConfigs = new ConcurrentHashMap<>();
+    private final ThreadLocal<ChatLanguageModel> threadScopedChatModel = new ThreadLocal<>();
+    private final ThreadLocal<StreamingChatLanguageModel> threadScopedStreamingModel = new ThreadLocal<>();
 
     public record JapSettings(
         LlmConfig llm,
@@ -132,11 +136,58 @@ public class JapConfigManager {
     }
 
     public ChatLanguageModel getChatLanguageModel() {
-        return chatLanguageModel;
+        ChatLanguageModel scoped = threadScopedChatModel.get();
+        return scoped != null ? scoped : chatLanguageModel;
     }
 
     public StreamingChatLanguageModel getStreamingChatLanguageModel() {
-        return createStreamingChatModel(currentSettings.llm());
+        StreamingChatLanguageModel scoped = threadScopedStreamingModel.get();
+        return scoped != null ? scoped : createStreamingChatModel(currentSettings.llm());
+    }
+
+    public void registerTaskLlmConfig(String taskId, com.jap.api.dto.TaskLlmConfig taskLlmConfig) {
+        if (taskId == null || taskId.isBlank() || taskLlmConfig == null) {
+            return;
+        }
+        if (taskLlmConfig.apiKey() == null || taskLlmConfig.apiKey().isBlank()) {
+            return;
+        }
+
+        LlmConfig base = currentSettings.llm();
+        LlmConfig resolved = new LlmConfig(
+            valueOr(taskLlmConfig.baseUrl(), base.baseUrl()),
+            taskLlmConfig.apiKey(),
+            valueOr(taskLlmConfig.modelName(), base.modelName()),
+            taskLlmConfig.temperature() != null ? taskLlmConfig.temperature() : base.temperature(),
+            taskLlmConfig.maxTokens() != null ? taskLlmConfig.maxTokens() : base.maxTokens(),
+            taskLlmConfig.timeoutSeconds() != null ? taskLlmConfig.timeoutSeconds() : base.timeoutSeconds()
+        );
+        taskLlmConfigs.put(taskId, resolved);
+        log.info("[{}] Registered task-scoped LLM config: model={}, baseUrl={}", taskId, resolved.modelName(), resolved.baseUrl());
+    }
+
+    public void activateTaskLlmContext(String taskId) {
+        if (taskId == null || taskId.isBlank()) {
+            return;
+        }
+        LlmConfig config = taskLlmConfigs.get(taskId);
+        if (config == null) {
+            return;
+        }
+        threadScopedChatModel.set(createChatModel(config));
+        threadScopedStreamingModel.set(createStreamingChatModel(config));
+    }
+
+    public void clearThreadLlmContext() {
+        threadScopedChatModel.remove();
+        threadScopedStreamingModel.remove();
+    }
+
+    public void clearTaskLlmConfig(String taskId) {
+        if (taskId == null || taskId.isBlank()) {
+            return;
+        }
+        taskLlmConfigs.remove(taskId);
     }
 
     public ChatLanguageModel rebuildChatModel(LlmConfig config) {
@@ -289,5 +340,9 @@ public class JapConfigManager {
             return "****";
         }
         return apiKey.substring(0, 4) + "****" + apiKey.substring(apiKey.length() - 4);
+    }
+
+    private static String valueOr(String value, String fallback) {
+        return (value == null || value.isBlank()) ? fallback : value;
     }
 }

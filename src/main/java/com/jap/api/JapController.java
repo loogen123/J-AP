@@ -2,6 +2,7 @@ package com.jap.api;
 
 import com.jap.api.dto.*;
 import com.jap.api.exception.TaskNotFoundException;
+import com.jap.config.JapConfigManager;
 import com.jap.config.JapProperties;
 import com.jap.core.agent.AgentOrchestrator;
 import com.jap.core.agent.JapAgent;
@@ -29,10 +30,12 @@ public class JapController {
     private final Map<String, AgentContext> runningTasks = new ConcurrentHashMap<>();
     private final JapProperties japProperties;
     private final AgentOrchestrator agentOrchestrator;
+    private final JapConfigManager configManager;
 
-    public JapController(JapProperties japProperties, AgentOrchestrator agentOrchestrator) {
+    public JapController(JapProperties japProperties, AgentOrchestrator agentOrchestrator, JapConfigManager configManager) {
         this.japProperties = japProperties;
         this.agentOrchestrator = agentOrchestrator;
+        this.configManager = configManager;
     }
 
     @PostMapping
@@ -69,18 +72,21 @@ public class JapController {
             request.faultSimulation() != null ? request.faultSimulation() : FaultSimulation.DISABLED
         );
         runningTasks.put(taskId, context);
+        configManager.registerTaskLlmConfig(taskId, request.llm());
 
         if (designOnly) {
             agentOrchestrator.submitDesignOnly(taskId, request.requirement(), context.options(), context.faultSimulation())
                 .thenAccept(result -> {
                     log.info("[{}] Agent completed with outcome: {}", taskId, result.outcome());
                     context.updateStatus(mapOutcomeToStatus(result.outcome()));
+                    configManager.clearTaskLlmConfig(taskId);
                 });
         } else {
             agentOrchestrator.submit(taskId, request.requirement(), context.options(), context.faultSimulation())
                 .thenAccept(result -> {
                     log.info("[{}] Agent completed with outcome: {}", taskId, result.outcome());
                     context.updateStatus(mapOutcomeToStatus(result.outcome()));
+                    configManager.clearTaskLlmConfig(taskId);
                 });
         }
 
@@ -205,6 +211,7 @@ public class JapController {
 
         String reason = body != null ? body.get("reason") : "User cancelled";
         agentOrchestrator.cancel(taskId);
+        configManager.clearTaskLlmConfig(taskId);
         context.cancel(reason);
 
         Map<String, Object> response = Map.of(

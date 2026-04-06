@@ -148,6 +148,7 @@ public class SecureMavenExecutor {
     }
 
     private ProcessBuilder createSecureProcessBuilder(File workingDir) {
+        String taskLocalRepo = new File(workingDir, ".m2/repository").getAbsolutePath();
         List<String> command = List.of(
             "mvn", "clean", "compile", 
             "-B", 
@@ -159,7 +160,7 @@ public class SecureMavenExecutor {
             "-Dpmd.skip=true",
             "-Dspotbugs.skip=true",
             "-Denforcer.skip=true",
-            "-Dmaven.repo.local=" + sandboxRoot.resolve(".m2/repository")
+            "-Dmaven.repo.local=" + taskLocalRepo
         );
 
         ProcessBuilder pb = new ProcessBuilder(command);

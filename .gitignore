@@ -1,4 +1,4 @@
-# Maven
+﻿# Maven
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -12,6 +12,7 @@ buildNumber.properties
 # IDE
 .idea/
 .vscode/
+.trae/
 *.iml
 *.ipr
 *.iws
@@ -93,6 +94,12 @@ dist/
 release/
 META-INF/
 J-AP-Distribution/
+deliverables/jpackage-input/
+deliverables/jpackage-input-*/
+deliverables/build-tmp-*/
+deliverables/J-AP/
+deliverables/*/*.tmp
 
 # Local vendor/temp files
 src/main/resources/static/tailwind.min.css
+ARCHITECTURE.md
