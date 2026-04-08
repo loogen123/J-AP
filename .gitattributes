@@ -1,1 +1,2 @@
 deliverables/J-AP-appimage.zip filter=lfs diff=lfs merge=lfs -text
+deliverables/J-AP-functional-20260408-110422.zip filter=lfs diff=lfs merge=lfs -text

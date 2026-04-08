@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+13<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J-AP 2026 — J-Architect-Pilot</title>
+    <title>J-AP 2026 ?J-Architect-Pilot</title>
     <script src="/vendor/tailwindcdn.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
@@ -153,19 +153,19 @@
     <div class="flex items-center gap-3">
         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center font-bold text-sm text-white">J</div>
         <span class="font-semibold text-lg tracking-tight">J-Architect-Pilot</span>
-        <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/20 ml-2">2026 工业级</span>
+        <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/20 ml-2">2026 工业?/span>
     </div>
     <div class="flex items-center gap-4">
         <div id="llmWorkingIndicator" class="hidden items-center gap-2 px-3 py-1 rounded-full bg-blue-900/30 border border-blue-500/50">
             <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
-            <span id="llmWorkingText" class="text-xs text-blue-400">LLM 思考中...</span>
+            <span id="llmWorkingText" class="text-xs text-blue-400">LLM 思中...</span>
         </div>
         <div id="llmStatus" class="text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
-            LLM: 未配置
+            LLM: 未配?
         </div>
         <div class="ws-status text-xs">
             <span class="dot disconnected" id="wsDot"></span>
-            <span id="wsStatus" class="text-[--text-muted]">WebSocket: 未连接</span>
+            <span id="wsStatus" class="text-[--text-muted]">WebSocket: 未连?/span>
         </div>
         <div id="globalStatus" class="text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
             系统空闲
@@ -183,22 +183,22 @@
 
     <aside class="w-80 glass-panel border-r border-[--border-color] flex flex-col overflow-hidden">
         <div class="p-4 border-b border-[--border-color]">
-            <h2 class="text-sm font-semibold text-[--text-secondary] uppercase tracking-wider">需求控制台</h2>
+            <h2 class="text-sm font-semibold text-[--text-secondary] uppercase tracking-wider">霢求控制台</h2>
         </div>
 
         <div class="flex-1 overflow-y-auto p-4 space-y-5">
             
             <div>
-                <label class="block text-xs font-medium text-[--text-muted] mb-2 uppercase tracking-wide">技术栈</label>
+                <label class="block text-xs font-medium text-[--text-muted] mb-2 uppercase tracking-wide">抢术栈</label>
                 <div class="grid grid-cols-2 gap-2">
                     <div class="tech-chip selected" data-tech="jdk25">
-                        <span class="text-xs font-medium">JDK 25</span><br><span class="text-[10px] text-[--text-muted]">结构化并发</span>
+                        <span class="text-xs font-medium">JDK 25</span><br><span class="text-[10px] text-[--text-muted]">结构化并?/span>
                     </div>
                     <div class="tech-chip selected" data-tech="springboot">
                         <span class="text-xs font-medium">Spring Boot 3.4</span><br><span class="text-[10px] text-[--text-muted]">虚拟线程</span>
                     </div>
                     <div class="tech-chip selected" data-tech="langchain4j">
-                        <span class="text-xs font-medium">LangChain4j</span><br><span class="text-[10px] text-[--text-muted]">1.0.0 稳定版</span>
+                        <span class="text-xs font-medium">LangChain4j</span><br><span class="text-[10px] text-[--text-muted]">1.0.0 稳定?/span>
                     </div>
                     <div class="tech-chip selected" data-tech="mysql">
                         <span class="text-xs font-medium">MySQL 9.x</span><br><span class="text-[10px] text-[--text-muted]">+ Redis 7.4+</span>
@@ -209,27 +209,27 @@
             <div class="space-y-3">
                 <div>
                     <label class="block text-xs font-medium text-[--text-muted] mb-2 uppercase tracking-wide">业务目标 <span class="text-red-400">*</span></label>
-                    <textarea id="businessGoalInput" rows="4" placeholder="描述希望实现的核心业务目标（必填）"
+                    <textarea id="businessGoalInput" rows="4" placeholder="描述希望实现的核心业务目标（必填?
                         class="w-full bg-[--bg-secondary] border border-[--border-color] rounded-lg p-3 text-sm text-[--text-primary] placeholder-[--text-muted] resize-none focus:outline-none focus:border-[--accent-blue] focus:ring-1 focus:ring-[--accent-blue]/30 mono"></textarea>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[--text-muted] mb-2 uppercase tracking-wide">核心实体（可选）</label>
-                    <textarea id="coreEntitiesInput" rows="2" placeholder="例如：用户、订单、商品"
+                    <textarea id="coreEntitiesInput" rows="2" placeholder="例如：用户订单商?
                         class="w-full bg-[--bg-secondary] border border-[--border-color] rounded-lg p-2.5 text-xs text-[--text-primary] placeholder-[--text-muted] resize-none focus:outline-none focus:border-[--accent-blue] focus:ring-1 focus:ring-[--accent-blue]/30 mono"></textarea>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[--text-muted] mb-2 uppercase tracking-wide">关键接口（可选）</label>
-                    <textarea id="keyInterfacesInput" rows="2" placeholder="例如：用户 CRUD、订单创建、分页查询"
+                    <textarea id="keyInterfacesInput" rows="2" placeholder="例如：用?CRUD、订单创建分页查?
                         class="w-full bg-[--bg-secondary] border border-[--border-color] rounded-lg p-2.5 text-xs text-[--text-primary] placeholder-[--text-muted] resize-none focus:outline-none focus:border-[--accent-blue] focus:ring-1 focus:ring-[--accent-blue]/30 mono"></textarea>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[--text-muted] mb-2 uppercase tracking-wide">边界条件（可选）</label>
-                    <textarea id="boundaryConditionsInput" rows="2" placeholder="例如：仅内部网络可访问、单租户、数据保留 90 天"
+                    <textarea id="boundaryConditionsInput" rows="2" placeholder="例如：仅内部网络可访问单租户、数据保?90 ?
                         class="w-full bg-[--bg-secondary] border border-[--border-color] rounded-lg p-2.5 text-xs text-[--text-primary] placeholder-[--text-muted] resize-none focus:outline-none focus:border-[--accent-blue] focus:ring-1 focus:ring-[--accent-blue]/30 mono"></textarea>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-[--text-muted] mb-2 uppercase tracking-wide">非功能要求（可选）</label>
-                    <textarea id="nonFunctionalInput" rows="2" placeholder="例如：99.9% 可用性、接口响应 < 200ms、审计日志"
+                    <label class="block text-xs font-medium text-[--text-muted] mb-2 uppercase tracking-wide">非功能要求（可）</label>
+                    <textarea id="nonFunctionalInput" rows="2" placeholder="例如?9.9% 可用性接口响?< 200ms、审计日?
                         class="w-full bg-[--bg-secondary] border border-[--border-color] rounded-lg p-2.5 text-xs text-[--text-primary] placeholder-[--text-muted] resize-none focus:outline-none focus:border-[--accent-blue] focus:ring-1 focus:ring-[--accent-blue]/30 mono"></textarea>
                 </div>
                 <textarea id="requirementInput" class="hidden"></textarea>
@@ -242,7 +242,7 @@
                             <svg class="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
                             <span class="text-xs font-semibold text-red-400">故障模拟</span>
                         </div>
-                        <p class="text-[10px] text-[--text-muted] mt-1 ml-6">模拟 E02 编译错误 → 自愈循环</p>
+                        <p class="text-[10px] text-[--text-muted] mt-1 ml-6">模拟 E02 编译错误 ?自愈循环</p>
                     </div>
                     <label class="toggle-switch">
                         <input type="checkbox" id="faultToggle">
@@ -251,9 +251,9 @@
                 </div>
                 <div id="faultDetail" class="hidden mt-2 pt-2 border-t border-[--border-color]">
                     <select id="faultType" class="w-full bg-[--bg-primary] border border-[--border-color] rounded-md text-xs p-1.5 text-[--text-secondary] focus:outline-none">
-                        <option value="E02">E02 — 编译错误（方法名拼写错误）</option>
-                        <option value="E06">E06 — 测试失败（服务层空指针）</option>
-                        <option value="E05">E05 — 安全违规（路径遍历）</option>
+                        <option value="E02">E02 ?编译错误（方法名拼写错误?/option>
+                        <option value="E06">E06 ?测试失败（服务层空指针）</option>
+                        <option value="E05">E05 ?安全违规（路径遍历）</option>
                     </select>
                 </div>
             </div>
@@ -268,7 +268,7 @@
                 <button id="implementBtn" onclick="startFullPipeline()" disabled
                     class="w-full py-2.5 rounded-xl font-semibold text-sm bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:to-cyan-500">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                    开始物理实现
+                    弢始物理实?
                 </button>
             </div>
 
@@ -287,7 +287,7 @@
                     </div>
                     <button onclick="approveAndContinue()" 
                         class="px-6 py-2.5 rounded-lg text-sm font-bold bg-green-500 hover:bg-green-400 text-white transition-all hover:scale-105 shadow-lg shadow-green-500/30">
-                        ✓ 确认并继续
+                        ?确认并继?
                     </button>
                 </div>
             </div>
@@ -295,7 +295,7 @@
             <div class="grid grid-cols-2 gap-2 mt-auto">
                 <div class="rounded-lg bg-[--bg-secondary] border border-[--border-color] p-2.5 text-center">
                     <div class="text-lg font-bold text-[--accent-cyan]" id="statDuration">--</div>
-                    <div class="text-[10px] text-[--text-muted]">耗时 (秒)</div>
+                    <div class="text-[10px] text-[--text-muted]">耗时 (?</div>
                 </div>
                 <div class="rounded-lg bg-[--bg-secondary] border border-[--border-color] p-2.5 text-center">
                     <div class="text-lg font-bold text-[--accent-green]" id="statRetries">0/3</div>
@@ -313,7 +313,7 @@
         
         <div class="h-52 border-b border-[--border-color] p-4 overflow-x-auto">
             <div class="flex items-center justify-between mb-2">
-                <h3 class="text-xs font-semibold text-[--text-secondary] uppercase tracking-wider">Agent 状态机</h3>
+                <h3 class="text-xs font-semibold text-[--text-secondary] uppercase tracking-wider">Agent 状机</h3>
                 <span id="currentStateLabel" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700 mono">空闲</span>
             </div>
             <svg id="stateMachineSvg" viewBox="0 0 900 140" class="w-full h-28" style="min-width:720px;">
@@ -403,7 +403,7 @@
 
         <div class="flex-1 flex flex-col overflow-hidden">
             <div class="flex items-center justify-between px-4 py-2 border-b border-[--border-color]">
-                <h3 class="text-xs font-semibold text-[--text-secondary] uppercase tracking-wider">思考日志 &amp; 事件流</h3>
+                <h3 class="text-xs font-semibold text-[--text-secondary] uppercase tracking-wider">思日?&amp; 事件?/h3>
                 <div class="flex items-center gap-3">
                     <button onclick="clearLogs()" class="text-[10px] text-[--text-muted] hover:text-[--text-secondary] transition-colors">清空</button>
                     <div class="flex items-center gap-1.5">
@@ -428,7 +428,7 @@
         
         <div class="p-4 border-b border-[--border-color]">
             <div class="flex items-center justify-between mb-1">
-                <h2 class="text-sm font-semibold text-[--text-secondary] uppercase tracking-wider">数字工作区</h2>
+                <h2 class="text-sm font-semibold text-[--text-secondary] uppercase tracking-wider">数字工作?/h2>
                 <span class="text-[10px] text-[--text-muted] mono">generated-workspace/</span>
             </div>
             <div class="flex items-center gap-3 mt-2">
@@ -447,9 +447,9 @@
         </div>
 
         <div class="flex-shrink-0 border-b border-[--border-color]">
-            <div class="px-3 py-1.5 text-[10px] font-semibold text-[--text-muted] uppercase tracking-wider bg-[--bg-secondary]/50">文件树</div>
+            <div class="px-3 py-1.5 text-[10px] font-semibold text-[--text-muted] uppercase tracking-wider bg-[--bg-secondary]/50">文件?/div>
             <div id="fileTree" class="max-h-52 overflow-y-auto py-1 text-xs">
-                <div class="text-[--text-muted] text-center py-4 text-[11px]">暂无生成的文件</div>
+                <div class="text-[--text-muted] text-center py-4 text-[11px]">暂无生成的文?/div>
             </div>
         </div>
 
@@ -457,7 +457,7 @@
             <div class="flex items-center justify-between px-3 py-1.5 border-b border-[--border-color] bg-[--bg-secondary]/30">
                 <span id="previewFileName" class="text-[10px] font-mono text-[--text-muted]">选择文件预览</span>
             </div>
-            <pre id="codePreview" class="flex-1 overflow-auto p-3 m-0 text-[11px] leading-5 text-[--text-secondary] bg-[--bg-primary]/50 mono"><span class="text-[--text-muted]">// 代码预览将在生成后显示...</span></pre>
+            <pre id="codePreview" class="flex-1 overflow-auto p-3 m-0 text-[11px] leading-5 text-[--text-secondary] bg-[--bg-primary]/50 mono"><span class="text-[--text-muted]">// 代码预览将在生成后显?..</span></pre>
         </div>
 
         <details class="border-t border-[--border-color]">
@@ -468,22 +468,22 @@
             <div class="mermaid-container mx-2 mb-2">
                 <div class="mermaid">
 graph TB
-    subgraph Layer0["第 0 层: LLM 输出"]
-        OP[输出解析器<br/>JSON Schema 校验]
+    subgraph Layer0["?0 ? LLM 输出"]
+        OP[输出解析?br/>JSON Schema 校验]
     end
-    subgraph Layer1["第 1 层: 语义验证器"]
+    subgraph Layer1["?1 ? 语义验证?]
         AST[AST 分析器]
-        SEM[语义检查器]
+        SEM[语义棢查器]
     end
-    subgraph Layer2["第 2 层: 安全沙箱"]
+    subgraph Layer2["?2 ? 安全沙箱"]
         FS[文件系统沙箱]
         PS[进程沙箱]
     end
-    subgraph Layer3["第 3 层: 构建门禁"]
+    subgraph Layer3["?3 ? 构建门禁"]
         MV[Maven 编译]
         JT[JUnit5 测试]
     end
-    subgraph Layer4["第 4 层: 自愈循环"]
+    subgraph Layer4["?4 ? 自愈循环"]
         EC[错误分类器]
         FPG[修复提示生成器]
     end
@@ -504,8 +504,8 @@ graph TB
     <div class="absolute inset-x-4 top-8 bottom-8 md:inset-x-[15%] glass-panel border border-[--border-color] rounded-xl flex flex-col overflow-hidden">
         <div class="p-4 border-b border-[--border-color] flex items-center justify-between">
             <div>
-                <h3 class="text-sm font-semibold">需求澄清对话</h3>
-                <p class="text-xs text-[--text-muted] mt-1">AI 会先提问补充关键信息，确认清晰后再进入需求分析。</p>
+                <h3 class="text-sm font-semibold">霢求澄清对?/h3>
+                <p class="text-xs text-[--text-muted] mt-1">AI 会先提问补充关键信息，确认清晰后再进入需求分析?/p>
             </div>
             <button onclick="closeClarificationDialog()" class="text-xs px-2 py-1 rounded hover:bg-slate-700 text-[--text-muted]">关闭</button>
         </div>
@@ -515,32 +515,29 @@ graph TB
                 <label for="clarificationFocus" class="text-xs text-[--text-muted] whitespace-nowrap">提问方向</label>
                 <select id="clarificationFocus" onchange="onClarificationFocusChanged()" class="flex-1 bg-[--bg-secondary] border border-[--border-color] rounded-lg px-2 py-1.5 text-xs text-[--text-primary] focus:outline-none focus:border-[--accent-blue]">
                     <option value="GENERAL">综合澄清</option>
-                    <option value="PRODUCT">产品与业务流程</option>
-                    <option value="DESIGN">交互与界面设计</option>
-                    <option value="API">接口与契约</option>
-                    <option value="DATA">数据模型与存储</option>
+                    <option value="PRODUCT">产品与业务流?/option>
+                    <option value="DESIGN">交互与界面设?/option>
+                    <option value="API">接口与契?/option>
+                    <option value="DATA">数据模型与存?/option>
                     <option value="NON_FUNCTIONAL">性能与非功能要求</option>
                 </select>
             </div>
             <div class="flex gap-2">
-                <input id="clarificationInput" type="text" placeholder="补充你的回答，或告诉 AI 需求已足够清楚"
+                <input id="clarificationInput" type="text" placeholder="补充你的回答，或告诉 AI 可以自由设计"
                        class="flex-1 bg-[--bg-secondary] border border-[--border-color] rounded-lg px-3 py-2 text-sm text-[--text-primary] placeholder-[--text-muted] focus:outline-none focus:border-[--accent-blue]"/>
                 <button id="clarificationSendBtn" onclick="sendClarificationMessage()"
                         class="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-semibold">
-                    发送
-                </button>
+                    发?                </button>
             </div>
             <div class="flex gap-2 justify-between items-center">
                 <button id="clarificationFinishBtn" onclick="finishClarificationAndStart()"
                         class="text-xs px-3 py-2 rounded-lg bg-blue-600 text-white border border-blue-500 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-400 disabled:border-slate-600 disabled:cursor-not-allowed">
-                    我的需求已经足够清楚，结束对话开始
-                </button>
-                <button id="clarificationContinueBtn" onclick="continueAfterClarification()" disabled title="仅当 AI 判断需求已足够完整后可用"
+                    我的霢求已经足够清楚，结束对话弢?                </button>
+                <button id="clarificationContinueBtn" onclick="continueAfterClarification()" disabled title="仅当 AI 判断霢求已足够完整后可?
                         class="text-xs px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-500 border border-green-500 disabled:bg-slate-700 disabled:text-slate-400 disabled:border-slate-600 disabled:cursor-not-allowed">
-                    AI 认为已完整，开始需求分析
-                </button>
+                    AI 认为已完整，弢始需求分?                </button>
             </div>
-            <p class="text-[11px] text-[--text-muted] text-right">右侧按钮需 AI 判断需求完整后才会启用</p>
+            <p class="text-[11px] text-[--text-muted] text-right">右侧按钮霢 AI 判断霢求完整后才会启用</p>
         </div>
     </div>
 </div>
@@ -633,14 +630,18 @@ function buildStructuredRequirement() {
     const keyInterfaces = normalizeInputText(document.getElementById('keyInterfacesInput').value);
     const boundaryConditions = normalizeInputText(document.getElementById('boundaryConditionsInput').value);
     const nonFunctional = normalizeInputText(document.getElementById('nonFunctionalInput').value);
-    if (!businessGoal) return '';
+
+    if (!businessGoal) {
+        return '';
+    }
 
     const sections = [];
-    sections.push('【业务目标】\n' + businessGoal);
-    if (coreEntities) sections.push('【核心实体】\n' + coreEntities);
-    if (keyInterfaces) sections.push('【关键接口】\n' + keyInterfaces);
-    if (boundaryConditions) sections.push('【边界条件】\n' + boundaryConditions);
+    sections.push('【业务目标\n' + businessGoal);
+    if (coreEntities) sections.push('【核心实体\n' + coreEntities);
+    if (keyInterfaces) sections.push('【关键接口\n' + keyInterfaces);
+    if (boundaryConditions) sections.push('【边界条件\n' + boundaryConditions);
     if (nonFunctional) sections.push('【非功能要求】\n' + nonFunctional);
+
     return sections.join('\n\n');
 }
 
@@ -652,6 +653,7 @@ function appendClarificationMessage(role, text) {
     const container = document.getElementById('clarificationMessages');
     const wrapper = document.createElement('div');
     wrapper.className = role === 'assistant' ? 'flex justify-start' : 'flex justify-end';
+
     const bubble = document.createElement('div');
     bubble.className = role === 'assistant'
         ? 'max-w-[90%] rounded-lg px-3 py-2 text-sm bg-[--bg-secondary] border border-[--border-color] text-[--text-primary] whitespace-pre-wrap'
@@ -675,49 +677,56 @@ function setClarificationStreamingState(streaming) {
 
 function parseSseData(raw) {
     if (raw == null || raw === '') return '';
-    try { return JSON.parse(raw); } catch (e) { return raw; }
+    try {
+        return JSON.parse(raw);
+    } catch (e) {
+        return raw;
+    }
 }
 
-function dispatchSseEvent(eventName, payload, streamState) {
+function dispatchSseEvent(eventName, dataPayload, streamState) {
     if (eventName === 'token') {
-        const token = typeof payload === 'string' ? payload : '';
+        const token = typeof dataPayload === 'string' ? dataPayload : '';
         streamState.buffer += token;
         streamState.bubble.textContent = streamState.buffer;
-        return;
-    }
-    if (eventName === 'done') {
-        const done = typeof payload === 'object' && payload !== null ? payload : { text: String(payload || '') };
+    } else if (eventName === 'done') {
+        const done = typeof dataPayload === 'object' && dataPayload !== null ? dataPayload : { text: String(dataPayload || '') };
         const text = (done.text || streamState.buffer || '').trim();
         streamState.buffer = text;
         streamState.bubble.textContent = text;
         clarificationHistory.push({ role: 'assistant', content: text });
         clarificationReady = Boolean(done.ready);
-        setClarificationStreamingState(false);
+        document.getElementById('clarificationContinueBtn').disabled = !clarificationReady;
         if (clarificationReady) {
-            addLog('系统', '需求澄清完成，可开始需求分析。', 'success');
+            addLog('系统', '霢求澄清完成，可开始需求分析?, 'success');
         }
-        return;
-    }
-    if (eventName === 'error') {
-        const msg = typeof payload === 'object' && payload !== null ? (payload.message || '澄清请求失败') : String(payload || '澄清请求失败');
-        throw new Error(msg);
+    } else if (eventName === 'error') {
+        const message = typeof dataPayload === 'object' && dataPayload !== null
+            ? (dataPayload.message || '澄清请求失败')
+            : String(dataPayload || '澄清请求失败');
+        throw new Error(message);
     }
 }
 
 function handleSseChunk(chunk, streamState) {
     streamState.raw += chunk.replace(/\r/g, '');
-    let idx = streamState.raw.indexOf('\n\n');
-    while (idx >= 0) {
-        const block = streamState.raw.slice(0, idx);
-        streamState.raw = streamState.raw.slice(idx + 2);
+    let eventBoundary = streamState.raw.indexOf('\n\n');
+    while (eventBoundary >= 0) {
+        const block = streamState.raw.slice(0, eventBoundary);
+        streamState.raw = streamState.raw.slice(eventBoundary + 2);
+        const lines = block.split('\n');
         let eventName = 'message';
         const dataLines = [];
-        for (const line of block.split('\n')) {
-            if (line.startsWith('event:')) eventName = line.slice(6).trim();
-            else if (line.startsWith('data:')) dataLines.push(line.slice(5).trim());
+        for (const line of lines) {
+            if (line.startsWith('event:')) {
+                eventName = line.slice(6).trim();
+            } else if (line.startsWith('data:')) {
+                dataLines.push(line.slice(5).trim());
+            }
         }
-        dispatchSseEvent(eventName, parseSseData(dataLines.join('\n')), streamState);
-        idx = streamState.raw.indexOf('\n\n');
+        const payload = parseSseData(dataLines.join('\n'));
+        dispatchSseEvent(eventName, payload, streamState);
+        eventBoundary = streamState.raw.indexOf('\n\n');
     }
 }
 
@@ -726,12 +735,12 @@ function openClarificationDialog(requirement, mode) {
     pendingStartMode = mode;
     clarificationHistory = [];
     clarificationReady = false;
+    setClarificationStreamingState(false);
     document.getElementById('clarificationMessages').innerHTML = '';
     document.getElementById('clarificationInput').value = '';
-    document.getElementById('clarificationFocus').value = 'GENERAL';
-    setClarificationStreamingState(false);
+    document.getElementById('clarificationContinueBtn').disabled = true;
     document.getElementById('clarificationModal').classList.remove('hidden');
-    appendClarificationMessage('assistant', '我会先做需求澄清。你也可以点击左下按钮直接开始。');
+    appendClarificationMessage('assistant', '我会先做霢求澄清你也可以直接说“你可以自由设计”让我开始分析?);
     streamClarification('');
 }
 
@@ -744,13 +753,18 @@ async function streamClarification(userMessage) {
     if (clarificationStreaming) return;
     const taskLlm = buildTaskLlmConfig();
     if (!taskLlm) {
-        addLog('错误', '当前会话未配置 LLM API Key，无法进行需求澄清。', 'error');
+        addLog('', 'ǰỰδ LLM API Key޷塣', 'error');
         openSettings();
         return;
     }
     setClarificationStreamingState(true);
-    const streamState = { bubble: appendClarificationMessage('assistant', ''), buffer: '', raw: '' };
+    const streamState = {
+        bubble: appendClarificationMessage('assistant', ''),
+        buffer: '',
+        raw: ''
+    };
     const focus = document.getElementById('clarificationFocus').value || 'GENERAL';
+
     try {
         const response = await fetch(API_BASE + '/api/v1/clarification/stream', {
             method: 'POST',
@@ -763,7 +777,10 @@ async function streamClarification(userMessage) {
                 llm: taskLlm
             })
         });
-        if (!response.ok || !response.body) throw new Error('澄清接口失败: HTTP ' + response.status);
+        if (!response.ok || !response.body) {
+            throw new Error('澄清接口请求失败: HTTP ' + response.status);
+        }
+
         const reader = response.body.getReader();
         const decoder = new TextDecoder('utf-8');
         while (true) {
@@ -772,7 +789,7 @@ async function streamClarification(userMessage) {
             handleSseChunk(decoder.decode(value, { stream: true }), streamState);
         }
     } catch (error) {
-        streamState.bubble.textContent = '澄清失败：' + error.message;
+        streamState.bubble.textContent = '澄清失败? + error.message;
         addLog('错误', '澄清请求失败: ' + error.message, 'error');
     } finally {
         setClarificationStreamingState(false);
@@ -791,36 +808,41 @@ async function sendClarificationMessage(presetMessage) {
 }
 
 function onClarificationFocusChanged() {
-    if (clarificationStreaming || clarificationReady || clarificationHistory.length === 0) return;
-    sendClarificationMessage('请按我当前选择的提问方向继续。');
+    if (clarificationStreaming) return;
+    if (clarificationReady) return;
+    if (clarificationHistory.length === 0) return;
+    sendClarificationMessage('请从我当前择的提问方向继续提问，并优先问这个方向朢关键的问题?);
 }
 
 function finishClarificationAndStart() {
     if (clarificationStreaming) return;
-    const text = '我的需求已经足够清楚，结束对话并开始分析。';
-    appendClarificationMessage('user', text);
-    clarificationHistory.push({ role: 'user', content: text });
+    const userText = '我的霢求已经足够清楚，结束对话并开始分析?;
+    appendClarificationMessage('user', userText);
+    clarificationHistory.push({ role: 'user', content: userText });
     clarificationReady = true;
-    setClarificationStreamingState(false);
+    document.getElementById('clarificationContinueBtn').disabled = false;
     continueAfterClarification();
 }
 
 function buildRequirementWithClarification(baseRequirement) {
     const qa = clarificationHistory
-        .filter(x => x && x.role && x.content)
-        .map(x => (x.role === 'assistant' ? 'AI: ' : '用户: ') + x.content.trim())
+        .filter(item => item && item.role && item.content)
+        .map(item => (item.role === 'assistant' ? 'AI: ' : '用户: ') + item.content.trim())
         .join('\n');
     if (!qa) return baseRequirement;
-    return baseRequirement + '\n\n【需求澄清对话】\n' + qa;
+    return baseRequirement + '\n\n【需求澄清对话\n' + qa;
 }
 
 function continueAfterClarification() {
-    if (clarificationStreaming) return;
-    const merged = buildRequirementWithClarification(pendingRequirement);
-    syncRequirementInput(merged);
+    if (!clarificationReady || clarificationStreaming) return;
+    const mergedRequirement = buildRequirementWithClarification(pendingRequirement);
+    syncRequirementInput(mergedRequirement);
     document.getElementById('clarificationModal').classList.add('hidden');
-    if (pendingStartMode === 'design') startDesignOnly(true);
-    else startFullPipeline(true);
+    if (pendingStartMode === 'design') {
+        startDesignOnly(true);
+    } else {
+        startFullPipeline(true);
+    }
 }
 
 function updateWsStatus(status) {
@@ -828,13 +850,13 @@ function updateWsStatus(status) {
     const text = document.getElementById('wsStatus');
     dot.className = 'dot ' + status;
     if (status === 'connected') {
-        text.textContent = 'WebSocket: 已连接';
+        text.textContent = 'WebSocket: 已连?;
         text.style.color = '#10b981';
     } else if (status === 'connecting') {
-        text.textContent = 'WebSocket: 连接中...';
+        text.textContent = 'WebSocket: 连接?..';
         text.style.color = '#f59e0b';
     } else {
-        text.textContent = 'WebSocket: 未连接';
+        text.textContent = 'WebSocket: 未连?;
         text.style.color = '#64748b';
     }
 }
@@ -848,7 +870,7 @@ function connectWebSocket(taskId) {
     stompClient.debug = null;
     
     stompClient.connect({}, function(frame) {
-        console.log('STOMP 已连接:', frame);
+        console.log('STOMP 已连?', frame);
         updateWsStatus('connected');
         
         if (taskId) {
@@ -944,13 +966,13 @@ function handlePrototypeProgress(data) {
         indicator.classList.remove('hidden');
         indicator.classList.add('flex');
         
-        let status = '生成 HTML 原型中...';
+        let status = '生成 HTML 原型?..';
         if (data.complete) {
             status = 'HTML 原型生成完成';
         } else if (data.partial) {
             status = 'HTML 原型部分完成 (' + data.charsWritten + ' 字符)';
         } else if (data.percentage > 0) {
-            status = '生成中 ' + data.percentage + '% (' + data.charsWritten + ' 字符)';
+            status = '生成?' + data.percentage + '% (' + data.charsWritten + ' 字符)';
         }
         text.textContent = status;
     }
@@ -959,7 +981,7 @@ function handlePrototypeProgress(data) {
         addLog(data.complete ? '成功' : '警告', 
             'HTML 原型' + (data.complete ? '生成完成' : '部分完成'), 
             data.complete ? 'success' : 'warn',
-            '共写入 ' + data.charsWritten + ' 字符');
+            '共写?' + data.charsWritten + ' 字符');
     }
 }
 
@@ -1002,7 +1024,7 @@ function stopHeartbeatMonitor() {
 function handleDesignComplete(data) {
     designComplete = true;
     addLog('系统', '设计文件生成完成', 'success',
-        '生成了 ' + data.designFilesCount + ' 个设计文档');
+        '生成?' + data.designFilesCount + ' 个设计文?);
     
     if (data.designFiles && data.designFiles.length > 0) {
         const prdFile = data.designFiles.find(f => f.includes('PRD'));
@@ -1015,7 +1037,7 @@ function handleDesignComplete(data) {
 function handleStageChanged(data) {
     const to = data.to || 'IDLE';
     activateState(to);
-    addLog('状态', `状态转换: ${STATE_LABELS[data.from] || data.from} → ${STATE_LABELS[to] || to}`, 'info');
+    addLog('状?, `状转? ${STATE_LABELS[data.from] || data.from} ?${STATE_LABELS[to] || to}`, 'info');
     
     if (to === 'WAITING_FOR_APPROVAL') {
         showApprovalBar();
@@ -1027,8 +1049,8 @@ function showApprovalBar() {
     approvalBar.classList.remove('hidden');
     approvalBar.classList.remove('animate-pulse');
     document.getElementById('implementBtn').disabled = false;
-    addLog('系统', '⏸️ 设计阶段完成，等待您的审批', 'success',
-        '请审阅设计文档后点击"确认并继续"按钮');
+    addLog('系统', '⏸️ 设计阶段完成，等待您的审?, 'success',
+        '请审阅设计文档后点击"确认并继?按钮');
 }
 
 function handleLogAdded(data) {
@@ -1042,9 +1064,9 @@ function handleProgressUpdated(data) {
 
 function handleFileGenerated(data) {
     const path = data.path;
-    workspaceFiles[path] = `// 生成的文件: ${path}\n// 大小: ${data.size} 字节`;
+    workspaceFiles[path] = `// 生成的文? ${path}\n// 大小: ${data.size} 字节`;
     renderFileTree(workspaceFiles);
-    addLog('生成', `已生成: ${path}`, 'info');
+    addLog('生成', `已生? ${path}`, 'info');
 }
 
 function handleErrorDetected(data) {
@@ -1056,22 +1078,22 @@ function handleFixAttempted(data) {
     healingRounds = data.round;
     document.getElementById('statRetries').textContent = `${healingRounds}/3`;
     addLog('修复', `修复尝试 #${data.round} - ${data.patchType}`, 'fix',
-        `目标: ${data.targetFile}\n已应用: ${data.fixApplied}`);
+        `目标: ${data.targetFile}\n已应? ${data.fixApplied}`);
 }
 
 function handlePipelineCompleted(data) {
     stopAgent();
     activateState('COMPLETE');
     setProgress(100, '完成!');
-    const outcomeText = data.outcome === 'SUCCESS' ? '成功' : data.outcome === 'HEALED' ? '已自愈' : '失败';
-    addLog('流水线', `流水线 ${outcomeText}!`, 'success',
+    const outcomeText = data.outcome === 'SUCCESS' ? '成功' : data.outcome === 'HEALED' ? '已自? : '失败';
+    addLog('流水?, `流水?${outcomeText}!`, 'success',
         `耗时: ${data.totalDurationMs}ms\n文件: ${data.filesGenerated}\n自愈轮次: ${data.healingRounds}`);
 }
 
 function handleManualIntervention(data) {
     stopAgent();
     activateState('MANUAL_INTERVENTION');
-    addLog('系统', '需要人工干预', 'error', data.humanReadableSummary);
+    addLog('系统', '霢要人工干?, 'error', data.humanReadableSummary);
 }
 
 function mapLogType(type) {
@@ -1161,7 +1183,7 @@ function activateState(stateName) {
     }
 
     const gs = document.getElementById('globalStatus');
-    gs.textContent = stateName === 'COMPLETE' ? '流水线完成' : STATE_LABELS[stateName] || stateName;
+    gs.textContent = stateName === 'COMPLETE' ? '流水线完? : STATE_LABELS[stateName] || stateName;
     gs.style.color = stateName === 'COMPLETE' ? '#10b981' : stateName === 'BUG_FIX' ? '#ef4444' : '#94a3b8';
 }
 
@@ -1202,7 +1224,7 @@ function addLog(type, message, category, extra) {
 }
 
 function clearLogs() {
-    document.getElementById('logContainer').innerHTML = '<div class="text-[--text-muted] text-center py-8">日志已清空。</div>';
+    document.getElementById('logContainer').innerHTML = '<div class="text-[--text-muted] text-center py-8">日志已清空?/div>';
 }
 
 function escapeHtml(str) {
@@ -1213,7 +1235,7 @@ function escapeHtml(str) {
 function renderFileTree(files) {
     const container = document.getElementById('fileTree');
     if (!files || Object.keys(files).length === 0) {
-        container.innerHTML = '<div class="text-[--text-muted] text-center py-4 text-[11px]">暂无生成的文件</div>';
+        container.innerHTML = '<div class="text-[--text-muted] text-center py-4 text-[11px]">暂无生成的文?/div>';
         return;
     }
 
@@ -1233,7 +1255,7 @@ function renderFileTree(files) {
 }
 
 function getFileIcon(name) {
-    if (name.endsWith('.java')) return '<span class="text-orange-400 text-xs">☕</span>';
+    if (name.endsWith('.java')) return '<span class="text-orange-400 text-xs">?/span>';
     if (name.endsWith('.xml')) return '<span class="text-red-400 text-xs">📋</span>';
     if (name.endsWith('.yml') || name.endsWith('.yaml')) return '<span class="text-pink-400 text-xs">⚙️</span>';
     return '<span class="text-[--text-muted] text-xs">📄</span>';
@@ -1243,7 +1265,7 @@ function selectFile(path) {
     document.querySelectorAll('.file-tree-item').forEach(el => el.classList.remove('selected'));
     event.currentTarget.classList.add('selected');
     
-    const content = workspaceFiles[path] || '// 文件未加载';
+    const content = workspaceFiles[path] || '// 文件未加?;
     document.getElementById('previewFileName').textContent = path;
     
     const previewContainer = document.getElementById('codePreview');
@@ -1256,7 +1278,7 @@ function selectFile(path) {
                 <a href="/api/v1/preview/${path}" target="_blank" class="text-xs text-blue-400 hover:text-blue-300">在新窗口打开</a>
             </div>
             <iframe src="/api/v1/preview/${path}" class="w-full h-64 border border-[--border-color] rounded-lg bg-white"></iframe>
-            <div class="mt-2 text-xs text-[--text-muted]">源代码:</div>
+            <div class="mt-2 text-xs text-[--text-muted]">源代?</div>
             <pre class="mt-1 text-[10px] overflow-auto max-h-40">${escapeHtml(content)}</pre>
         `;
     } else if (lowerPath.endsWith('.md')) {
@@ -1319,21 +1341,21 @@ async function startDesignOnly(skipClarification) {
     
     const structuredRequirement = buildStructuredRequirement();
     if (!structuredRequirement) {
-        addLog('错误', '启动前请填写业务目标。', 'error');
+        addLog('错误', '启动前请填写业务目标?, 'error');
         return;
     }
-    const taskLlm = buildTaskLlmConfig();
-    if (!taskLlm) {
-        addLog('错误', '请先在设置中配置当前会话 LLM API Key。', 'error');
-        openSettings();
-        return;
-    }
+
     if (!skipClarification) {
         syncRequirementInput(structuredRequirement);
         openClarificationDialog(structuredRequirement, 'design');
         return;
     }
+
     const finalRequirement = document.getElementById('requirementInput').value.trim() || structuredRequirement;
+    if (!finalRequirement) {
+        addLog('错误', '霢求为空，无法弢始?, 'error');
+        return;
+    }
 
     agentRunning = true;
     designComplete = false;
@@ -1344,7 +1366,7 @@ async function startDesignOnly(skipClarification) {
     const designBtn = document.getElementById('designBtn');
     const implementBtn = document.getElementById('implementBtn');
     designBtn.disabled = true;
-    designBtn.innerHTML = '<span class="pulse-dot inline-block w-2 h-2 rounded-full bg-white mr-2"></span>生成设计中...';
+    designBtn.innerHTML = '<span class="pulse-dot inline-block w-2 h-2 rounded-full bg-white mr-2"></span>生成设计?..';
     designBtn.classList.add('opacity-70', 'cursor-not-allowed');
     implementBtn.disabled = true;
     document.getElementById('approvalBar').classList.add('hidden');
@@ -1360,6 +1382,14 @@ async function startDesignOnly(skipClarification) {
 
     const faultEnabled = document.getElementById('faultToggle').checked;
     const faultType = document.getElementById('faultType').value;
+    const taskLlm = buildTaskLlmConfig();
+    if (!taskLlm) {
+        addLog('', 'õǰỰ LLM API Key', 'error');
+        openSettings();
+        stopAgent();
+        return;
+    }
+    
     const requestBody = {
         requirement: finalRequirement,
         options: {
@@ -1390,8 +1420,8 @@ async function startDesignOnly(skipClarification) {
         currentTaskId = result.taskId;
         document.getElementById('currentTaskId').textContent = currentTaskId;
         
-        addLog('系统', '设计任务已提交: ' + currentTaskId, 'success');
-        addLog('系统', '状态: ' + result.status, 'info');
+        addLog('系统', '设计任务已提? ' + currentTaskId, 'success');
+        addLog('系统', '状? ' + result.status, 'info');
         
         activateState('INTENT_ANALYSIS');
         
@@ -1408,21 +1438,21 @@ async function startFullPipeline(skipClarification) {
     
     const structuredRequirement = buildStructuredRequirement();
     if (!structuredRequirement) {
-        addLog('错误', '启动前请填写业务目标。', 'error');
+        addLog('错误', '启动前请填写业务目标?, 'error');
         return;
     }
-    const taskLlm = buildTaskLlmConfig();
-    if (!taskLlm) {
-        addLog('错误', '请先在设置中配置当前会话 LLM API Key。', 'error');
-        openSettings();
-        return;
-    }
+
     if (!skipClarification) {
         syncRequirementInput(structuredRequirement);
         openClarificationDialog(structuredRequirement, 'full');
         return;
     }
+
     const finalRequirement = document.getElementById('requirementInput').value.trim() || structuredRequirement;
+    if (!finalRequirement) {
+        addLog('错误', '霢求为空，无法弢始?, 'error');
+        return;
+    }
 
     agentRunning = true;
     healingRounds = 0;
@@ -1433,7 +1463,7 @@ async function startFullPipeline(skipClarification) {
     const implementBtn = document.getElementById('implementBtn');
     designBtn.disabled = true;
     implementBtn.disabled = true;
-    implementBtn.innerHTML = '<span class="pulse-dot inline-block w-2 h-2 rounded-full bg-white mr-2"></span>实现中...';
+    implementBtn.innerHTML = '<span class="pulse-dot inline-block w-2 h-2 rounded-full bg-white mr-2"></span>实现?..';
     implementBtn.classList.add('opacity-70', 'cursor-not-allowed');
     document.getElementById('statRetries').textContent = '0/3';
 
@@ -1445,6 +1475,14 @@ async function startFullPipeline(skipClarification) {
 
     const faultEnabled = document.getElementById('faultToggle').checked;
     const faultType = document.getElementById('faultType').value;
+    const taskLlm = buildTaskLlmConfig();
+    if (!taskLlm) {
+        addLog('', 'õǰỰ LLM API Key', 'error');
+        openSettings();
+        stopAgent();
+        return;
+    }
+    
     const requestBody = {
         requirement: finalRequirement,
         options: {
@@ -1458,7 +1496,7 @@ async function startFullPipeline(skipClarification) {
         llm: taskLlm
     };
 
-    addLog('系统', '正在提交完整流水线任务...', 'system');
+    addLog('系统', '正在提交完整流水线任?..', 'system');
 
     try {
         const response = await fetch(API_BASE + '/api/v1/tasks', {
@@ -1475,8 +1513,8 @@ async function startFullPipeline(skipClarification) {
         currentTaskId = result.taskId;
         document.getElementById('currentTaskId').textContent = currentTaskId;
         
-        addLog('系统', '任务已提交: ' + currentTaskId, 'success');
-        addLog('系统', '状态: ' + result.status, 'info');
+        addLog('系统', '任务已提? ' + currentTaskId, 'success');
+        addLog('系统', '状? ' + result.status, 'info');
         
         activateState('INTENT_ANALYSIS');
         
@@ -1490,7 +1528,7 @@ async function startFullPipeline(skipClarification) {
 
 async function approveAndContinue() {
     if (!currentTaskId) {
-        addLog('错误', '没有活动的任务', 'error');
+        addLog('错误', '没有活动的任?, 'error');
         return;
     }
     
@@ -1498,7 +1536,7 @@ async function approveAndContinue() {
     btn.disabled = true;
     btn.textContent = '正在继续...';
     
-    addLog('系统', '正在发送审批确认...', 'system');
+    addLog('系统', '正在发审批确?..', 'system');
     
     try {
         const response = await fetch(API_BASE + '/api/v1/tasks/' + currentTaskId + '/resume', {
@@ -1513,7 +1551,7 @@ async function approveAndContinue() {
 
         const result = await response.json();
         
-        addLog('系统', '✅ 审批已确认，继续执行代码生成...', 'success');
+        addLog('系统', '?审批已确认，继续执行代码生成...', 'success');
         
         document.getElementById('approvalBar').classList.add('hidden');
         activateState('CODE_GENERATION');
@@ -1521,7 +1559,7 @@ async function approveAndContinue() {
     } catch (error) {
         addLog('错误', '审批确认失败: ' + error.message, 'error');
         btn.disabled = false;
-        btn.textContent = '✓ 确认并继续';
+        btn.textContent = '?确认并继?;
     }
 }
 
@@ -1532,7 +1570,7 @@ function stopAgent() {
     
     if (startTime) {
         const elapsed = Math.round((Date.now() - startTime) / 1000);
-        document.getElementById('statDuration').textContent = elapsed + '秒';
+        document.getElementById('statDuration').textContent = elapsed + '?;
     }
     
     const designBtn = document.getElementById('designBtn');
@@ -1543,13 +1581,14 @@ function stopAgent() {
     designBtn.classList.remove('opacity-70', 'cursor-not-allowed');
     
     implementBtn.disabled = !designComplete;
-    implementBtn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>开始物理实现';
+    implementBtn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>弢始物理实?;
     implementBtn.classList.remove('opacity-70', 'cursor-not-allowed');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('businessGoalInput').value = '实现一个用户管理的 RESTful API，支持 CRUD 操作和分页查询，使用 MySQL 存储。需要包含 Service 层、Repository 层和完整的单元测试。';
+    document.getElementById('businessGoalInput').value = '实现丢个用户管理的 RESTful API，支?CRUD 操作和分页查询，使用 MySQL 存储。需要包?Service 层Repository 层和完整的单元测试?;
     syncRequirementInput(buildStructuredRequirement());
+
     document.getElementById('clarificationInput').addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -1585,6 +1624,7 @@ async function loadSettings() {
                 document.getElementById('llmModelName').value = sessionLlm.modelName || data.llm.modelName;
                 document.getElementById('llmApiKey').value = sessionLlm.apiKey || '';
             }
+
             updateLlmStatus(Boolean(sessionLlm && sessionLlm.apiKey));
         }
     } catch (error) {
@@ -1595,10 +1635,10 @@ async function loadSettings() {
 function updateLlmStatus(apiKeyConfigured) {
     const statusEl = document.getElementById('llmStatus');
     if (apiKeyConfigured) {
-        statusEl.textContent = 'LLM: configured';
+        statusEl.textContent = 'LLM: 已配?;
         statusEl.className = 'text-xs px-3 py-1 rounded-full bg-green-900/30 text-green-400 border border-green-700/50';
     } else {
-        statusEl.textContent = 'LLM: not configured';
+        statusEl.textContent = 'LLM: 未配?;
         statusEl.className = 'text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700';
     }
 }
@@ -1616,7 +1656,9 @@ function buildTaskLlmConfig() {
         maxTokens: 4096,
         timeoutSeconds: 300
     };
-    if (!resolved.apiKey) return null;
+    if (!resolved.apiKey) {
+        return null;
+    }
     setSessionLlmConfig(resolved);
     return resolved;
 }
@@ -1624,7 +1666,7 @@ function buildTaskLlmConfig() {
 async function saveSettings() {
     const sessionLlm = buildTaskLlmConfig();
     if (!sessionLlm) {
-        alert('Please provide an LLM API key for this browser session.');
+        alert('дǰỰ LLM API Key');
         return;
     }
 
@@ -1654,26 +1696,25 @@ async function saveSettings() {
             if (result.success) {
                 const statusEl = document.getElementById('workspaceStatus');
                 if (result.absolutePath) {
-                    statusEl.textContent = 'Saved workspace path: ' + result.absolutePath;
+                    statusEl.textContent = 'ѱ棬·: ' + result.absolutePath;
                     statusEl.className = 'text-xs text-green-400 mt-1';
                 }
                 setSessionLlmConfig(sessionLlm);
                 updateLlmStatus(true);
-                alert('Saved. LLM config is session-scoped and will not be shared across processes.');
+                alert('ѱ档LLM ڵǰỰЧ̹');
                 closeSettings();
             } else {
-                alert('Save failed: ' + result.error);
+                alert('ʧ: ' + result.error);
             }
         }
     } catch (error) {
-        alert('Save failed: ' + error.message);
+        alert('ʧ: ' + error.message);
     }
 }
-
 async function testLlmConnection() {
     const testBtn = document.getElementById('testLlmBtn');
     testBtn.disabled = true;
-    testBtn.textContent = 'Testing...';
+    testBtn.textContent = '测试?..';
 
     const config = {
         baseUrl: document.getElementById('llmBaseUrl').value,
@@ -1693,20 +1734,20 @@ async function testLlmConnection() {
 
         const result = await response.json();
         if (result.success) {
-            testBtn.textContent = 'Connected';
+            testBtn.textContent = '?连接成功';
             testBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-green-600 text-white';
         } else {
-            testBtn.textContent = 'Connection failed';
+            testBtn.textContent = '?连接失败';
             testBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-red-600 text-white';
         }
     } catch (error) {
-        testBtn.textContent = 'Connection failed';
+        testBtn.textContent = '?连接失败';
         testBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-red-600 text-white';
     }
 
     setTimeout(() => {
         testBtn.disabled = false;
-        testBtn.textContent = 'Test Connection';
+        testBtn.textContent = '测试连接';
         testBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-600 hover:bg-blue-500 text-white transition-colors';
     }, 3000);
 }
@@ -1716,7 +1757,7 @@ async function validateWorkspace() {
     const statusEl = document.getElementById('workspaceStatus');
 
     if (!path) {
-        statusEl.textContent = 'Please enter workspace path';
+        statusEl.textContent = '请输入工作区路径';
         statusEl.className = 'text-xs text-slate-500 mt-1';
         return;
     }
@@ -1730,14 +1771,14 @@ async function validateWorkspace() {
 
         const result = await response.json();
         if (result.valid) {
-            statusEl.textContent = 'Valid path: ' + result.absolutePath;
+            statusEl.textContent = '?物理路径: ' + result.absolutePath;
             statusEl.className = 'text-xs text-green-400 mt-1';
         } else {
-            statusEl.textContent = 'Invalid: ' + result.error;
+            statusEl.textContent = '?' + result.error;
             statusEl.className = 'text-xs text-red-400 mt-1';
         }
     } catch (error) {
-        statusEl.textContent = 'Validation failed';
+        statusEl.textContent = '?验证失败';
         statusEl.className = 'text-xs text-red-400 mt-1';
     }
 }
@@ -1770,21 +1811,21 @@ async function selectWorkspaceFolder() {
         if (result.path) {
             document.getElementById('workspacePath').value = result.path;
             const statusEl = document.getElementById('workspaceStatus');
-            statusEl.textContent = '已选择目录: ' + result.path;
+            statusEl.textContent = '已择目录: ' + result.path;
             statusEl.className = 'text-xs text-green-400 mt-1';
             validateWorkspace();
         } else if (result.error) {
-            alert('无法打开选择器: ' + result.error);
+            alert('无法打开选择? ' + result.error);
         }
     } catch (err) {
         console.error('选择目录失败:', err);
-        alert('无法连接到后端，请手动输入路径');
+        alert('无法连接到后端，请手动输入路?);
     }
 }
 
 async function saveFileToDirectory(filePath, content) {
     if (!workspaceDirectoryHandle) {
-        console.warn('未选择目录，无法保存文件:', filePath);
+        console.warn('未择目录，无法保存文?', filePath);
         return false;
     }
     
@@ -1825,7 +1866,7 @@ function onFolderSelected(event) {
             const selectedFolder = pathParts[0];
             
             const statusEl = document.getElementById('workspaceStatus');
-            statusEl.textContent = '已选择文件夹: ' + selectedFolder;
+            statusEl.textContent = '已择文件? ' + selectedFolder;
             statusEl.className = 'text-xs text-green-400 mt-1';
             
             const pathInput = document.getElementById('workspacePath');
@@ -1894,7 +1935,7 @@ function onFolderSelected(event) {
             </div>
 
             <div>
-                <h4 class="text-sm font-medium text-slate-300 mb-3">工作区路径</h4>
+                <h4 class="text-sm font-medium text-slate-300 mb-3">工作区路?/h4>
                 <div>
                     <label class="block text-xs text-slate-500 mb-1">生成目录（支持绝对路径）</label>
                     <div class="flex gap-2">
@@ -1938,3 +1979,4 @@ function onFolderSelected(event) {
 </div>
 </body>
 </html>
+

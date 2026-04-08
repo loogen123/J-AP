@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.List;
@@ -59,6 +60,10 @@ public class JapController {
             String forwardedHost,
             boolean designOnly
     ) {
+        if (request.llm() == null || request.llm().apiKey() == null || request.llm().apiKey().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task-scoped llm.apiKey is required");
+        }
+
         String taskId = generateTaskId();
         log.info("Received new task: {} (designOnly={}) with requirement: {}", taskId, designOnly,
                 request.requirement().substring(0, Math.min(50, request.requirement().length())) + "...");
