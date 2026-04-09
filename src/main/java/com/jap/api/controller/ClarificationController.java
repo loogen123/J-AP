@@ -75,6 +75,7 @@ public class ClarificationController {
                     .replace("[[READY]]", "")
                     .replace("[[ASK]]", "")
                     .trim();
+                cleaned = enforceSingleQuestion(cleaned, ready);
 
                 safeSend(emitter, "done", Map.of(
                     "text", cleaned,
@@ -163,15 +164,21 @@ public class ClarificationController {
 
             Rules:
             1. Reply in Chinese, concise and direct.
-            2. Ask at most 1-3 key questions per turn.
-            3. If user says \"you can design freely\", \"you decide\", or similar intent, switch to ready state.
-            4. If requirement is already clear enough, switch to ready state.
-            5. Always append one marker at the end:
+            2. Ask exactly 1 concrete question per turn when clarification is needed.
+            3. Never ask multiple questions in one reply; no numbered list, no bullet list.
+            4. The question must be specific and actionable, with concrete options/range/example if possible.
+            5. If user says \"you can design freely\", \"you decide\", or similar intent, switch to ready state.
+            6. If requirement is already clear enough, switch to ready state.
+            7. Always append one marker at the end:
                - [[ASK]] when more clarification is needed
                - [[READY]] when analysis can start
-            6. Do not output any other control markers.
-            7. If Preferred focus is not GENERAL, prioritize questions in that focus.
-            8. Focus discipline is mandatory: if Preferred focus is not GENERAL, only ask questions in that focus this turn.
+            8. Do not output any other control markers.
+            9. If Preferred focus is not GENERAL, prioritize questions in that focus.
+            10. Focus discipline is mandatory: if Preferred focus is not GENERAL, only ask questions in that focus this turn.
+            11. For details not mentioned by user, proactively design and complete them with reasonable defaults; do not wait for user to provide every detail.
+            12. For short or vague requirements, first state your default assumptions briefly, then ask at most one high-impact confirmation question.
+            13. If uncertainty is low and assumptions are standard, prefer moving forward with assumptions and return [[READY]].
+            14. Treat user silence on non-critical details as permission for AI to design those parts.
 
             Original requirement:
             """ + requirement + """
@@ -190,6 +197,48 @@ public class ClarificationController {
             """;
     }
 
+    private String enforceSingleQuestion(String text, boolean ready) {
+        if (text == null || text.isBlank() || ready) {
+            return text == null ? "" : text.trim();
+        }
+
+        String normalized = text
+            .replaceAll("(?m)^\\s*(?:[-*]|\\d+[.)])\\s*", "")
+            .replace("\r", "")
+            .trim();
+
+        int questionIdx = firstQuestionEndIndex(normalized);
+        if (questionIdx > 0) {
+            return normalized.substring(0, questionIdx).trim();
+        }
+
+        int sentenceIdx = firstSentenceEndIndex(normalized);
+        if (sentenceIdx > 0) {
+            String sentence = normalized.substring(0, sentenceIdx).trim();
+            if (!sentence.endsWith("?")) {
+                sentence = sentence + "?";
+            }
+            return sentence;
+        }
+        return normalized;
+    }
+
+    private int firstQuestionEndIndex(String text) {
+        int idx = text.indexOf('?');
+        return idx < 0 ? -1 : idx + 1;
+    }
+
+    private int firstSentenceEndIndex(String text) {
+        int dot = text.indexOf('.');
+        int newline = text.indexOf('\n');
+        int semi = text.indexOf(';');
+        int comma = text.indexOf(',');
+        int min = Integer.MAX_VALUE;
+        for (int v : new int[]{dot, newline, semi, comma}) {
+            if (v >= 0 && v < min) min = v;
+        }
+        return min == Integer.MAX_VALUE ? -1 : min + 1;
+    }
     private void safeSend(SseEmitter emitter, String event, Object data) {
         try {
             emitter.send(SseEmitter.event().name(event).data(data));
@@ -197,3 +246,6 @@ public class ClarificationController {
         }
     }
 }
+
+
+

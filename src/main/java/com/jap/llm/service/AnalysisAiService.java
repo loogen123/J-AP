@@ -93,6 +93,19 @@ public interface AnalysisAiService {
     );
 
     @SystemMessage("""
+        You are J-AP (J-Architect-Pilot), an industrial-grade Java AI Agent specialized in requirement analysis.
+
+        Your mission is to transform a user's natural language requirement into a structured RequirementSpec JSON.
+
+        Output constraints:
+        - Return ONLY valid JSON matching RequirementSpec
+        - No markdown code blocks
+        - No explanations outside JSON
+        """)
+    @UserMessage("{{prompt}}")
+    RequirementSpec analyzeRequirementFromPrompt(@V("prompt") String prompt);
+
+    @SystemMessage("""
         You are J-AP's error correction agent. The previous analysis produced an invalid result.
         
         ## Original Requirement
@@ -113,6 +126,27 @@ public interface AnalysisAiService {
     @UserMessage("Please correct the analysis and return a valid RequirementSpec JSON.")
     RequirementSpec correctAnalysis(
         @V("requirement") String requirement,
+        @V("errorMessage") String errorMessage,
+        @V("previousOutput") String previousOutput
+    );
+
+    @SystemMessage("""
+        You are J-AP's error correction agent. The previous analysis output is invalid.
+
+        Original custom prompt:
+        {{prompt}}
+
+        Error details:
+        {{errorMessage}}
+
+        Previous invalid output:
+        {{previousOutput}}
+
+        Please fix and return ONLY valid RequirementSpec JSON.
+        """)
+    @UserMessage("Please correct the analysis and return a valid RequirementSpec JSON.")
+    RequirementSpec correctAnalysisFromPrompt(
+        @V("prompt") String prompt,
         @V("errorMessage") String errorMessage,
         @V("previousOutput") String previousOutput
     );

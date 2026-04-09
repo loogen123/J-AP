@@ -10,6 +10,7 @@ public interface AgentOrchestrator {
     CompletableFuture<JapAgent.JapAgentResult> submit(
         String taskId, 
         String requirement, 
+        String analysisPromptOverride,
         TaskOptions options, 
         FaultSimulation faultSimulation
     );
@@ -17,6 +18,7 @@ public interface AgentOrchestrator {
     CompletableFuture<JapAgent.JapAgentResult> submitDesignOnly(
         String taskId, 
         String requirement, 
+        String analysisPromptOverride,
         TaskOptions options, 
         FaultSimulation faultSimulation
     );

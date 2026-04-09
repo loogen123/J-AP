@@ -1,10 +1,7 @@
 package com.jap.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
-import java.util.List;
 
 public record SubmitRequest(
     @NotBlank(message = "需求描述不能为空")
@@ -15,7 +12,10 @@ public record SubmitRequest(
 
     FaultSimulation faultSimulation,
 
-    TaskLlmConfig llm
+    TaskLlmConfig llm,
+
+    @Size(max = 50000, message = "analysisPromptOverride cannot exceed 50000 characters")
+    String analysisPromptOverride
 ) {
     public SubmitRequest {
         if (options == null) {

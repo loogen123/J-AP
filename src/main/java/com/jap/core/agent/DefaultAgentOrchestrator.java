@@ -86,18 +86,21 @@ public class DefaultAgentOrchestrator implements AgentOrchestrator {
 
     @Override
     public CompletableFuture<JapAgent.JapAgentResult> submit(String taskId, String requirement,
+                                                              String analysisPromptOverride,
                                                               TaskOptions options, 
                                                               FaultSimulation faultSimulation) {
-        return submit(taskId, requirement, options, faultSimulation, JapAgent.ExecutionMode.FULL);
+        return submit(taskId, requirement, analysisPromptOverride, options, faultSimulation, JapAgent.ExecutionMode.FULL);
     }
 
     public CompletableFuture<JapAgent.JapAgentResult> submitDesignOnly(String taskId, String requirement,
+                                                                         String analysisPromptOverride,
                                                                          TaskOptions options, 
                                                                          FaultSimulation faultSimulation) {
-        return submit(taskId, requirement, options, faultSimulation, JapAgent.ExecutionMode.DESIGN_ONLY);
+        return submit(taskId, requirement, analysisPromptOverride, options, faultSimulation, JapAgent.ExecutionMode.DESIGN_ONLY);
     }
 
     private CompletableFuture<JapAgent.JapAgentResult> submit(String taskId, String requirement,
+                                                                String analysisPromptOverride,
                                                                 TaskOptions options, 
                                                                 FaultSimulation faultSimulation,
                                                                 JapAgent.ExecutionMode mode) {
@@ -113,7 +116,7 @@ public class DefaultAgentOrchestrator implements AgentOrchestrator {
                 log.info("[{}] JapAgent started (active={}/{}, mode={})", 
                     taskId, activeCount.get(), maxConcurrentAgents, mode);
 
-                JapAgent agent = new JapAgent(taskId, requirement, options, faultSimulation, 
+                JapAgent agent = new JapAgent(taskId, requirement, analysisPromptOverride, options, faultSimulation, 
                                               eventPublisher, analysisAiService,
                                               codeGeneratorAiService, designAiService, fixAiService,
                                               fileSystemTools, mavenExecutor, errorClassifier, pauseManager,

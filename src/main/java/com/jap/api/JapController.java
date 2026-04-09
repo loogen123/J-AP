@@ -80,14 +80,14 @@ public class JapController {
         configManager.registerTaskLlmConfig(taskId, request.llm());
 
         if (designOnly) {
-            agentOrchestrator.submitDesignOnly(taskId, request.requirement(), context.options(), context.faultSimulation())
+            agentOrchestrator.submitDesignOnly(taskId, request.requirement(), request.analysisPromptOverride(), context.options(), context.faultSimulation())
                 .thenAccept(result -> {
                     log.info("[{}] Agent completed with outcome: {}", taskId, result.outcome());
                     context.updateStatus(mapOutcomeToStatus(result.outcome()));
                     configManager.clearTaskLlmConfig(taskId);
                 });
         } else {
-            agentOrchestrator.submit(taskId, request.requirement(), context.options(), context.faultSimulation())
+            agentOrchestrator.submit(taskId, request.requirement(), request.analysisPromptOverride(), context.options(), context.faultSimulation())
                 .thenAccept(result -> {
                     log.info("[{}] Agent completed with outcome: {}", taskId, result.outcome());
                     context.updateStatus(mapOutcomeToStatus(result.outcome()));

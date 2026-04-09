@@ -61,6 +61,7 @@ public class JapAgent {
 
     private final String taskId;
     private final String requirement;
+    private final String analysisPromptOverride;
     private final TaskOptions options;
     private final FaultSimulation faultSimulation;
     private final TaskEventPublisher publisher;
@@ -88,7 +89,7 @@ public class JapAgent {
     private volatile int currentProgress = 0;
     private Thread heartbeatThread;
 
-    public JapAgent(String taskId, String requirement, TaskOptions options,
+    public JapAgent(String taskId, String requirement, String analysisPromptOverride, TaskOptions options,
                     FaultSimulation faultSimulation, TaskEventPublisher publisher,
                     AnalysisAiService analysisAiService,
                     CodeGeneratorAiService codeGeneratorAiService,
@@ -102,6 +103,7 @@ public class JapAgent {
                     com.jap.config.JapConfigManager configManager) {
         this.taskId = taskId;
         this.requirement = requirement;
+        this.analysisPromptOverride = analysisPromptOverride;
         this.options = options;
         this.faultSimulation = faultSimulation;
         this.publisher = publisher;
@@ -303,12 +305,21 @@ public class JapAgent {
                 
                 RequirementSpec spec;
                 boolean hasRawOutput = lastRawOutput != null && !lastRawOutput.isBlank();
+                boolean hasPromptOverride = analysisPromptOverride != null && !analysisPromptOverride.isBlank();
                 if (retryCount == 0 || !hasRawOutput) {
-                    spec = analysisAiService.analyzeRequirement(requirement, packageName, databaseType);
+                    if (hasPromptOverride) {
+                        spec = analysisAiService.analyzeRequirementFromPrompt(analysisPromptOverride);
+                    } else {
+                        spec = analysisAiService.analyzeRequirement(requirement, packageName, databaseType);
+                    }
                 } else {
                     publishLog("INNER", "INTENT_ANALYSIS", "E01 Self-Correction", 
                         "Retrying with error context: " + lastError);
-                    spec = analysisAiService.correctAnalysis(requirement, lastError, lastRawOutput);
+                    if (hasPromptOverride) {
+                        spec = analysisAiService.correctAnalysisFromPrompt(analysisPromptOverride, lastError, lastRawOutput);
+                    } else {
+                        spec = analysisAiService.correctAnalysis(requirement, lastError, lastRawOutput);
+                    }
                 }
 
                 validateRequirementSpec(spec);
@@ -464,6 +475,7 @@ public class JapAgent {
             if (result.success() || result.isPartial()) {
                 String prototypePath = taskPath("prototype/index.html");
                 generatedFilePaths.add(prototypePath);
+                publisher.publishFileGenerated(taskId, prototypePath, result.charsWritten(), "HTML");
                 
                 if (result.success()) {
                     publishLog("SUCCESS", "DESIGN", "Prototype generated", 

@@ -15,6 +15,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -24,6 +25,8 @@ public class StreamingHtmlGenerator {
     
     private static final int PROGRESS_REPORT_INTERVAL = 500;
     private static final int ESTIMATED_HTML_SIZE = 15000;
+    private static final int MAX_CONTINUATION_ROUNDS = 2;
+    private static final int CONTINUATION_TAIL_CHARS = 3200;
 
     private final StreamingChatLanguageModel chatModel;
     private final TaskEventPublisher eventPublisher;
@@ -153,6 +156,25 @@ public class StreamingHtmlGenerator {
                 Path workspaceRoot = getWorkspaceRoot();
                 Path fullOutputPath = workspaceRoot.resolve(outputPath);
                 
+                boolean hasClosingHtml = containsClosingHtmlTag(tempFile);
+                if (!hasClosingHtml && charsWritten.get() > 0) {
+                    for (int i = 1; i <= MAX_CONTINUATION_ROUNDS; i++) {
+                        publishProgress(charsWritten.get(),
+                            "HTML 未闭合，自动续写中(" + i + "/" + MAX_CONTINUATION_ROUNDS + ")",
+                            Math.min(98, (charsWritten.get() * 100) / ESTIMATED_HTML_SIZE),
+                            false,
+                            true);
+                        boolean appended = continueHtmlStreaming(tempFile, charsWritten, i);
+                        if (!appended) break;
+                        hasClosingHtml = containsClosingHtmlTag(tempFile);
+                        if (hasClosingHtml) {
+                            completed.set(true);
+                            error.set(null);
+                            break;
+                        }
+                    }
+                }
+
                 if (completed.get() && error.get() == null) {
                     Files.move(tempFile, fullOutputPath, 
                         java.nio.file.StandardCopyOption.REPLACE_EXISTING,
@@ -181,6 +203,75 @@ public class StreamingHtmlGenerator {
         }
 
         return new StreamingResult(false, charsWritten.get(), error.get());
+    }
+
+    private boolean continueHtmlStreaming(Path partialFile, AtomicInteger charsWritten, int round) {
+        try {
+            String existing = Files.readString(partialFile);
+            if (existing == null || existing.isBlank()) return false;
+            if (containsClosingHtmlTag(partialFile)) return true;
+
+            String tail = existing.length() > CONTINUATION_TAIL_CHARS
+                ? existing.substring(existing.length() - CONTINUATION_TAIL_CHARS)
+                : existing;
+
+            String continuationPrompt = """
+                Continue writing ONLY the missing tail of this HTML file.
+                Do not repeat existing content.
+                Ensure the final output becomes a complete, valid HTML document and closes all tags.
+
+                Existing HTML tail:
+                """ + tail;
+
+            java.util.concurrent.CompletableFuture<Void> future = new java.util.concurrent.CompletableFuture<>();
+            try (BufferedWriter appendWriter = Files.newBufferedWriter(partialFile, StandardOpenOption.APPEND)) {
+                chatModel.chat(continuationPrompt, new StreamingChatResponseHandler() {
+                    @Override
+                    public void onPartialResponse(String partialResponse) {
+                        try {
+                            if (partialResponse != null && !partialResponse.isEmpty()) {
+                                appendWriter.write(partialResponse);
+                                charsWritten.addAndGet(partialResponse.length());
+                            }
+                        } catch (IOException e) {
+                            future.completeExceptionally(e);
+                        }
+                    }
+
+                    @Override
+                    public void onCompleteResponse(dev.langchain4j.model.chat.response.ChatResponse response) {
+                        try {
+                            appendWriter.flush();
+                        } catch (IOException ignored) {
+                        }
+                        future.complete(null);
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        future.completeExceptionally(throwable);
+                    }
+                });
+                future.join();
+            }
+
+            log.info("[{}] Continuation round {} appended, total chars={}", taskId, round, charsWritten.get());
+            return true;
+        } catch (Exception e) {
+            log.warn("[{}] Continuation round {} failed: {}", taskId, round, e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean containsClosingHtmlTag(Path file) {
+        try {
+            String content = Files.readString(file);
+            if (content == null) return false;
+            String lower = content.toLowerCase();
+            return lower.contains("</html>");
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private Path getWorkspaceRoot() {
